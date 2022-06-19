@@ -1,0 +1,2 @@
+tuist fetch
+tuist generate
