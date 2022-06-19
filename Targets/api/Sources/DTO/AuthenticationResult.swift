@@ -10,7 +10,7 @@ import Foundation
 
 public struct AuthenticationResult: Codable, Equatable {
     public let back: AuthenticationResultDetails
-    
+
     public enum CodingKeys: String, CodingKey {
         case back
     }

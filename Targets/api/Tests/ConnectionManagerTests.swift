@@ -6,27 +6,29 @@
 //  Copyright © 2022 eric.gimenez.galera. All rights reserved.
 //
 
-import Foundation
 @testable import API
+import Foundation
 import OHHTTPStubs
 import XCTest
 
 final class ConnectionManagerTests: BaseTests {
     private let fakePath = "/fake/path"
     private let fakeToken = "fakeToken"
-    
+
     func testSuccessConnection() async throws {
         // MARK: Given
+
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
         stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
-        
+
         let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
-        
+
         // MARK: WHEN
+
         let authenticationResult: AuthenticationResult = try await connectionManager.doRequest(
             validStatusCodes: [200],
             useAuthentication: false,
@@ -34,21 +36,24 @@ final class ConnectionManagerTests: BaseTests {
         )
 
         // MARK: THEN
+
         XCTAssertEqual(expectedAuthenticationResult, authenticationResult)
     }
-    
+
     func testInternalError() async throws {
         // MARK: Given
+
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
         stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
-        
+
         let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
-        
+
         // MARK: WHEN
+
         do {
             _ = try await connectionManager.doRequest(
                 validStatusCodes: [200],
@@ -58,6 +63,7 @@ final class ConnectionManagerTests: BaseTests {
             XCTFail("Exception not thrown out")
         } catch {
             // MARK: THEN
+
             if let error = error as? ConnectionManagerError {
                 XCTAssertEqual(error, .internalError)
             } else {
@@ -65,19 +71,21 @@ final class ConnectionManagerTests: BaseTests {
             }
         }
     }
-    
+
     func testCheckInvalidStatusCodes() async throws {
         // MARK: Given
+
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
         stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 304
         )
-        
+
         let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
-        
+
         // MARK: WHEN
+
         do {
             _ = try await connectionManager.doRequest(
                 validStatusCodes: [400, 404],
@@ -87,6 +95,7 @@ final class ConnectionManagerTests: BaseTests {
             XCTFail("Exception not thrown out")
         } catch {
             // MARK: THEN
+
             if let error = error as? ConnectionManagerError {
                 XCTAssertEqual(error, .invalidStatusCode(expectedStatusCodes: [400, 404], receivedStatusCode: 304))
             } else {
@@ -94,19 +103,21 @@ final class ConnectionManagerTests: BaseTests {
             }
         }
     }
-    
+
     func testCheckValidStatusCodes() async throws {
         // MARK: Given
+
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
         stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 404
         )
-        
+
         let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
-        
+
         // MARK: WHEN
+
         let authenticationResult: AuthenticationResult = try await connectionManager.doRequest(
             validStatusCodes: [400, 404],
             useAuthentication: false,
@@ -114,13 +125,13 @@ final class ConnectionManagerTests: BaseTests {
         )
 
         // MARK: THEN
+
         XCTAssertEqual(expectedAuthenticationResult, authenticationResult)
-        
     }
-    
+
     func testAuthentication() async throws {
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        
+
         stub(
             condition: { urlRequest in
                 let cookie = urlRequest.headers["Cookie"]
@@ -141,7 +152,7 @@ final class ConnectionManagerTests: BaseTests {
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
-        
+
         _ = try await connectionManager.doRequest(
             validStatusCodes: [200],
             useAuthentication: true,
@@ -150,9 +161,9 @@ final class ConnectionManagerTests: BaseTests {
                 method: .post
             )
         ) as AuthenticationResult
-        
+
         HTTPStubs.removeAllStubs()
-        
+
         stub(
             condition: { urlRequest in
                 let cookie = urlRequest.headers["Cookie"]
@@ -173,7 +184,7 @@ final class ConnectionManagerTests: BaseTests {
             response: try JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
-        
+
         _ = try await connectionManager.doRequest(
             validStatusCodes: [200],
             useAuthentication: true,

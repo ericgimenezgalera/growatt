@@ -11,7 +11,7 @@ import Foundation
 public struct AuthenticationResultDetails: Codable, Equatable {
     public let success: Bool
     public let data: [Plant]?
-    
+
     public enum CodingKeys: String, CodingKey {
         case success
         case data

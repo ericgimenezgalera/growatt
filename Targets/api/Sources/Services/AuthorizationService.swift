@@ -15,17 +15,17 @@ public protocol AuthorizationService {
 extension ConnectionManager: AuthorizationService {
     public func authorise(authentication: Authentication) async throws -> AuthenticationResult {
         // 401 if not authenticate
-        let result:AuthenticationResult  = try await ConnectionManager.Builder(self)
+        let result: AuthenticationResult = try await ConnectionManager.Builder(self)
             .addUrlSubPath(path: "newTwoLoginAPI.do")
             .httpMethod(.post)
             .encodeParameterInURL(parameter: authentication, includeBody: false)
             .validStatusCode(200)
             .doRequest()
-        
+
         guard result.back.success else {
             throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
         }
-        
+
         return result
     }
 }

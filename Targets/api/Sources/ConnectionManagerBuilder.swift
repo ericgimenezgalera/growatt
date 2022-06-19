@@ -47,7 +47,7 @@ extension ConnectionManager {
                 }
                 if includeBody {
                     let urlAllowed: CharacterSet =
-                        .alphanumerics.union(.init(charactersIn: "-._~&=")) //RFC 3986 + &=
+                        .alphanumerics.union(.init(charactersIn: "-._~&=")) // RFC 3986 + &=
                     request.httpBody = components.query?
                         .addingPercentEncoding(withAllowedCharacters: urlAllowed)?
                         .data(using: .utf8)
@@ -99,15 +99,15 @@ extension ConnectionManager {
             return self
         }
 
-        func doRequest<T: Codable>() async throws ->  T {
+        func doRequest<T: Codable>() async throws -> T {
             try await connectionManager.doRequest(
                 validStatusCodes: validStatusCode,
                 useAuthentication: useAuthentication,
                 request: request
             )
         }
-        
-        func debugDoRequest() async throws ->  String {
+
+        func debugDoRequest() async throws -> String {
             try await connectionManager.debugDoRequest(
                 validStatusCodes: validStatusCode,
                 useAuthentication: useAuthentication,

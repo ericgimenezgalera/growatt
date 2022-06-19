@@ -1,0 +1,6 @@
+--exclude workspace, gems, .bundle, .build, Carthage
+--wraparguments before-first
+--wrapcollections before-first
+--disable wrapMultilineStatementBraces
+--disable initCoderUnavailable
+--maxwidth 120

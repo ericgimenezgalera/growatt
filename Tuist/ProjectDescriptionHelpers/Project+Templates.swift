@@ -6,6 +6,16 @@ import ProjectDescription
 /// See https://docs.tuist.io/guides/helpers/
 
 extension Project {
+    private static let swiftlintScript = """
+    export PATH="$PATH:/opt/homebrew/bin"
+    swiftlint lint $SRCROOT/Targets --strict --config ".swiftlint.yml"
+    """
+
+    private static let swiftFormatScript = """
+    export PATH="$PATH:/opt/homebrew/bin"
+    swiftformat $SRCROOT/Targets --config $SRCROOT"/.swiftformat" --quiet
+    """
+
     /// Helper function to create the Project for this ExampleApp
     public static func app(name: String, platform: Platform, additionalTargets: [Target]) -> Project {
         let frameworkTargets = additionalTargets.filter({!$0.bundleId.contains("Test") })
@@ -32,6 +42,10 @@ extension Project {
                 infoPlist: .default,
                 sources: ["Targets/\(name)/Sources/**"],
                 resources: [],
+                scripts: [
+                    .pre(script: swiftFormatScript, name: "Swift format"),
+                    .pre(script: swiftlintScript, name: "Swiftlint")
+                ],
                 dependencies: dependencies)
         testDependencies.append(TargetDependency.target(name: name))
         
@@ -42,6 +56,10 @@ extension Project {
                 infoPlist: .default,
                 sources: ["Targets/\(name)/Tests/**"],
                 resources: [],
+                scripts: [
+                   .pre(script: swiftFormatScript, name: "Swift format"),
+                   .pre(script: swiftlintScript, name: "Swiftlint")
+                ],
                 dependencies: testDependencies)
         return [sources, tests]
     }
@@ -64,6 +82,10 @@ extension Project {
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["Targets/\(name)/Sources/**"],
             resources: ["Targets/\(name)/Resources/**"],
+            scripts: [
+                .pre(script: swiftFormatScript, name: "Swift format"),
+                .pre(script: swiftlintScript, name: "Swiftlint")
+            ],
             dependencies: dependencies
         )
 
@@ -74,6 +96,10 @@ extension Project {
             bundleId: "eric.gimenez.galera.\(name)Tests",
             infoPlist: .default,
             sources: ["Targets/\(name)/Tests/**"],
+            scripts: [
+                .pre(script: swiftFormatScript, name: "Swift format"),
+                .pre(script: swiftlintScript, name: "Swiftlint")
+            ],
             dependencies: [
                 .target(name: "\(name)")
         ])

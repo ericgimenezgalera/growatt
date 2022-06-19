@@ -6,14 +6,14 @@
 //  Copyright © 2022 eric.gimenez.galera. All rights reserved.
 //
 
-import Foundation
 @testable import API
+import Foundation
 
 extension Plant {
     static func makeStub() -> Plant {
         Plant(name: "fakePlantName", id: "fakePlantID")
     }
-    
+
     static func makeStub(name: String, id: String) -> Plant {
         Plant(name: name, id: id)
     }

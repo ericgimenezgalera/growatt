@@ -17,7 +17,6 @@ import Foundation
 import UIKit
 
 public final class LoginViewController: UIViewController, LoginViewControllerProtocol {
-    
     public init() {
         super.init(nibName: nil, bundle: nil)
         view.backgroundColor = .blue
@@ -28,8 +27,7 @@ public final class LoginViewController: UIViewController, LoginViewControllerPro
         return nil
     }
 
-    public override func viewWillAppear(_ animated: Bool) {
+    override public func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-
 }

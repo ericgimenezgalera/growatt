@@ -11,7 +11,7 @@ import Foundation
 public struct Plant: Codable, Equatable {
     public let name: String
     public let id: String
-    
+
     public enum CodingKeys: String, CodingKey {
         case name = "plantName"
         case id = "plantId"
