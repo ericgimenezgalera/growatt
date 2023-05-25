@@ -14,6 +14,7 @@ import XCTest
 final class ConnectionManagerTests: BaseTests {
     private let fakePath = "/fake/path"
     private let fakeToken = "fakeToken"
+    private let fakeServerId = "1234567890"
 
     func testSuccessConnection() async throws {
         // MARK: Given
@@ -135,14 +136,14 @@ final class ConnectionManagerTests: BaseTests {
         stub(
             condition: { urlRequest in
                 let cookie = urlRequest.headers["Cookie"]
-                XCTAssertEqual(cookie, "JSESSIONID=")
+                XCTAssertEqual(cookie, "JSESSIONID=;SERVERID=")
                 return true
             },
             response: { _ in
                 HTTPStubsResponse(
                     data: try! JSONEncoder().encode(expectedAuthenticationResult),
                     statusCode: 200,
-                    headers: ["Set-Cookie": "JSESSIONID=\(self.fakeToken)"]
+                    headers: ["Set-Cookie": "JSESSIONID=\(self.fakeToken);SERVERID=\(self.fakeServerId)"]
                 )
             }
         )
@@ -167,7 +168,7 @@ final class ConnectionManagerTests: BaseTests {
         stub(
             condition: { urlRequest in
                 let cookie = urlRequest.headers["Cookie"]
-                XCTAssertEqual(cookie, "JSESSIONID=\(self.fakeToken)")
+                XCTAssertEqual(cookie, "JSESSIONID=\(self.fakeToken);SERVERID=\(self.fakeServerId)")
                 return true
             },
             response: { _ in

@@ -35,6 +35,7 @@ public class ConnectionManager {
 
     let baseURL: URL
     private var jSessionId: String = ""
+    private var serverId: String = ""
     private let retryPolicy: RetryHandler = { _, _, _, completion in
         // TODO: implement retry policy
         completion(.doNotRetry)
@@ -53,7 +54,7 @@ public class ConnectionManager {
         var request = request
 
         if useAuthentication {
-            request.headers.add(name: "Cookie", value: "JSESSIONID=\(jSessionId)")
+            request.headers.add(name: "Cookie", value: "JSESSIONID=\(jSessionId);SERVERID=\(serverId)")
         }
 
         let task = AF
@@ -84,6 +85,8 @@ public class ConnectionManager {
                 let keyValue = line.split(separator: "=", maxSplits: 1)
                 if let key = keyValue.first, let value = keyValue.last, key.contains("JSESSIONID") {
                     jSessionId = String(value)
+                } else if let key = keyValue.first, let value = keyValue.last, key.contains("SERVERID") {
+                    serverId = String(value)
                 }
             }
         }
@@ -96,7 +99,7 @@ public class ConnectionManager {
     ) async throws -> String {
         var request = request
         if useAuthentication {
-            request.headers.add(name: "Cookie", value: "JSESSIONID=\(jSessionId)")
+            request.headers.add(name: "Cookie", value: "JSESSIONID=\(jSessionId);SERVERID=\(serverId)")
         }
 
         let task = AF
@@ -105,7 +108,7 @@ public class ConnectionManager {
 
         let response = await task.response
 
-        if response.error != nil {
+        if let error = response.error {
             throw ConnectionManagerError.internalError
         }
 
