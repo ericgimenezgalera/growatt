@@ -11,7 +11,7 @@ function install_tuist_if_not_exist() {
 function install_brew_if_not_exist() {
     if ! [[ -x "$(command -v brew)" ]]; then
         echo "Brew has not found. Installing it...";
-        ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+        /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     else
         echo "Brew already installed";
     fi
