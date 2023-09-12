@@ -5,7 +5,7 @@ disabled_rules:
 excluded: # paths to ignore during linting. Takes precedence over `included`.
   - Package.swift
   - Tuist
-  - Targets/API/Tests
+  - Targets/api/Tests
   - Targets/Growatt/Tests
   - Targets/UIFramework/Tests
 # configurable rules can be customized from this configuration file

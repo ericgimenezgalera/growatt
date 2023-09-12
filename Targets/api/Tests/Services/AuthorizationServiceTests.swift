@@ -20,9 +20,9 @@ final class AuthorizationServiceTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(loginPath) && isMethodPOST(),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 
@@ -46,9 +46,9 @@ final class AuthorizationServiceTests: BaseTests {
             )
         )
 
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(loginPath) && isMethodPOST(),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 

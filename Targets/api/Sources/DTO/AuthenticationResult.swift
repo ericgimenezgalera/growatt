@@ -1,5 +1,5 @@
 //
-//  Authorization.swift
+//  AuthenticationResult.swift
 //  api
 //
 //  Created by Eric Gimenez on 14/6/22.

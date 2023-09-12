@@ -20,9 +20,9 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 
@@ -45,9 +45,9 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 
@@ -77,9 +77,9 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 304
         )
 
@@ -109,9 +109,9 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 404
         )
 
@@ -148,9 +148,9 @@ final class ConnectionManagerTests: BaseTests {
             }
         )
 
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 
@@ -180,9 +180,9 @@ final class ConnectionManagerTests: BaseTests {
             }
         )
 
-        stubResponse(
+        try stubResponse(
             condition: isHost(Self.host) && isPath(fakePath),
-            response: try JSONEncoder().encode(expectedAuthenticationResult),
+            response: JSONEncoder().encode(expectedAuthenticationResult),
             code: 200
         )
 

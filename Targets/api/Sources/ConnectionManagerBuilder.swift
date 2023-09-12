@@ -38,7 +38,7 @@ extension ConnectionManager {
         func encodeParameterInURL<T: Encodable>(parameter: T, includeBody: Bool = false) throws -> Builder {
             request.headers.add(name: "Content-Type", value: "application/x-www-form-urlencoded; charset=utf-8")
             if let jsonParameters = try JSONSerialization.jsonObject(
-                with: try encoder.encode(parameter),
+                with: encoder.encode(parameter),
                 options: .allowFragments
             ) as? [String: String] {
                 var components = URLComponents(string: request.url!.absoluteString)!
