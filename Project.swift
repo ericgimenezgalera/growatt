@@ -8,12 +8,10 @@ let api = Project.makeFrameworkTargets(
     name: "API",
     platform: .iOS,
     dependencies: [
-        .external(name: "Alamofire")
+        .external(name: "Alamofire"),
+        .external(name: "Mocker")
     ],
-    testDependencies: [
-        .external(name: "OHHTTPStubs"),
-        //.external(name: "OHHTTPStubsSwift")
-    ]
+    testDependencies: [ ]
 )
 
 let uiFramework = Project.makeFrameworkTargets(

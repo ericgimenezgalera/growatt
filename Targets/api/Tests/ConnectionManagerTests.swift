@@ -8,11 +8,11 @@
 
 @testable import API
 import Foundation
-import OHHTTPStubs
+import Mocker
 import XCTest
 
 final class ConnectionManagerTests: BaseTests {
-    private let fakePath = "/fake/path"
+    private let fakePath = "fake/path"
     private let fakeToken = "fakeToken"
     private let fakeServerId = "1234567890"
 
@@ -20,13 +20,11 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
-        )
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
 
-        let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
+        stubResponse(subpath: fakePath, statusCode: 200, data: [.get: mockedData])
+
+        let request = try URLRequest(url: URL(string: "https://\(Self.host)/\(fakePath)")!, method: .get)
 
         // MARK: WHEN
 
@@ -45,13 +43,11 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
-        )
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
 
-        let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
+        stubResponse(subpath: fakePath, statusCode: 200, data: [.get: mockedData])
+
+        let request = try URLRequest(url: URL(string: "https://\(Self.host)/\(fakePath)")!, method: .get)
 
         // MARK: WHEN
 
@@ -77,13 +73,11 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 304
-        )
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
 
-        let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
+        stubResponse(subpath: fakePath, statusCode: 304, data: [.get: mockedData])
+
+        let request = try URLRequest(url: URL(string: "https://\(Self.host)/\(fakePath)")!, method: .get)
 
         // MARK: WHEN
 
@@ -109,13 +103,11 @@ final class ConnectionManagerTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 404
-        )
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
 
-        let request = try URLRequest(url: URL(string: "https://\(Self.host)\(fakePath)")!, method: .get)
+        stubResponse(subpath: fakePath, statusCode: 404, data: [.get: mockedData])
+
+        let request = try URLRequest(url: URL(string: "https://\(Self.host)/\(fakePath)")!, method: .get)
 
         // MARK: WHEN
 
@@ -132,67 +124,28 @@ final class ConnectionManagerTests: BaseTests {
 
     func testAuthentication() async throws {
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
 
-        stub(
-            condition: { urlRequest in
-                let cookie = urlRequest.headers["Cookie"]
-                XCTAssertEqual(cookie, "JSESSIONID=;SERVERID=")
-                return true
-            },
-            response: { _ in
-                HTTPStubsResponse(
-                    data: try! JSONEncoder().encode(expectedAuthenticationResult),
-                    statusCode: 200,
-                    headers: ["Set-Cookie": "JSESSIONID=\(self.fakeToken);SERVERID=\(self.fakeServerId)"]
-                )
-            }
-        )
+        XCTAssertTrue(connectionManager.serverId.isEmpty)
+        XCTAssertTrue(connectionManager.jSessionId.isEmpty)
 
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
+        stubResponse(
+            subpath: fakePath,
+            statusCode: 200,
+            data: [.post: mockedData],
+            additionalHeaders: ["Set-Cookie": "JSESSIONID=\(fakeToken);SERVERID=\(fakeServerId)"]
         )
 
         _ = try await connectionManager.doRequest(
             validStatusCodes: [200],
             useAuthentication: true,
             request: URLRequest(
-                url: URL(string: "https://\(Self.host)")!,
+                url: URL(string: "https://\(Self.host)/\(fakePath)")!,
                 method: .post
             )
         ) as AuthenticationResult
 
-        HTTPStubs.removeAllStubs()
-
-        stub(
-            condition: { urlRequest in
-                let cookie = urlRequest.headers["Cookie"]
-                XCTAssertEqual(cookie, "JSESSIONID=\(self.fakeToken);SERVERID=\(self.fakeServerId)")
-                return true
-            },
-            response: { _ in
-                HTTPStubsResponse(
-                    data: try! JSONEncoder().encode(expectedAuthenticationResult),
-                    statusCode: 200,
-                    headers: [:]
-                )
-            }
-        )
-
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(fakePath),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
-        )
-
-        _ = try await connectionManager.doRequest(
-            validStatusCodes: [200],
-            useAuthentication: true,
-            request: URLRequest(
-                url: URL(string: "https://\(Self.host)")!,
-                method: .post
-            )
-        ) as AuthenticationResult
+        XCTAssertEqual(connectionManager.jSessionId, fakeToken)
+        XCTAssertEqual(connectionManager.serverId, fakeServerId)
     }
 }

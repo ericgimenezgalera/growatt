@@ -7,7 +7,7 @@
 //
 @testable import API
 import Foundation
-import OHHTTPStubs
+import Mocker
 import XCTest
 
 class BaseTests: XCTestCase {
@@ -17,19 +17,30 @@ class BaseTests: XCTestCase {
     var connectionManager: ConnectionManager!
 
     override func setUp() {
-        HTTPStubs.removeAllStubs()
         connectionManager = .init(baseURL: BaseTests.baseUrl)
     }
 
     func stubResponse(
-        condition: @escaping HTTPStubsTestBlock = isHost(host),
-        response: Data,
-        code: Int32
+        subpath: String,
+        ignoreQuery: Bool = true,
+        cacheStoragePolicy: URLCache.StoragePolicy = .notAllowed,
+        dataType: Mock.DataType = .json,
+        statusCode: Int,
+        data: [Mock.HTTPMethod: Data],
+        additionalHeaders: [String: String] = [:],
+        requestError: Error? = nil
     ) {
-        stub(
-            condition: condition
-        ) { _ -> HTTPStubsResponse in
-            HTTPStubsResponse(data: response, statusCode: code, headers: .none)
-        }
+        let url = URL(string: "\(Self.baseUrl)/\(subpath)")!
+        let mock = Mock(
+            url: url,
+            ignoreQuery: ignoreQuery,
+            cacheStoragePolicy: cacheStoragePolicy,
+            dataType: dataType,
+            statusCode: statusCode,
+            data: data,
+            additionalHeaders: additionalHeaders,
+            requestError: requestError
+        )
+        mock.register()
     }
 }

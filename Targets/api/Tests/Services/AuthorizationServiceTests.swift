@@ -8,11 +8,11 @@
 
 @testable import API
 import Foundation
-import OHHTTPStubs
+import Mocker
 import XCTest
 
 final class AuthorizationServiceTests: BaseTests {
-    private let loginPath = "/newTwoLoginAPI.do"
+    private let loginPath = "newTwoLoginAPI.do"
     private let fakeUser = "fakeUser"
     private let fakePassword = "fakePassword"
 
@@ -20,11 +20,9 @@ final class AuthorizationServiceTests: BaseTests {
         // MARK: Given
 
         let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(loginPath) && isMethodPOST(),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
-        )
+
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
+        stubResponse(subpath: loginPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
@@ -46,11 +44,8 @@ final class AuthorizationServiceTests: BaseTests {
             )
         )
 
-        try stubResponse(
-            condition: isHost(Self.host) && isPath(loginPath) && isMethodPOST(),
-            response: JSONEncoder().encode(expectedAuthenticationResult),
-            code: 200
-        )
+        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
+        stubResponse(subpath: loginPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
