@@ -7,7 +7,6 @@
 
 import Alamofire
 import Foundation
-import Mocker
 
 public enum ConnectionManagerError: Error, Equatable {
     case internalError
@@ -35,9 +34,18 @@ public class ConnectionManager {
     typealias HTTPResponseHeaders = [String: String]
 
     let baseURL: URL
-    var jSessionId: String = ""
-    var serverId: String = ""
-    private let sessionManager: Session
+    private(set) var jSessionId: String = ""
+    private(set) var serverId: String = ""
+    private var internalSessionManager: Session?
+    var sessionManager: Session {
+        guard let internalSessionManager = internalSessionManager else {
+            AF.sessionConfiguration.waitsForConnectivity = true
+            internalSessionManager = AF
+            return AF
+        }
+        return internalSessionManager
+    }
+
     private let retryPolicy: RetryHandler = { _, _, _, completion in
         // TODO: implement retry policy
         completion(.doNotRetry)
@@ -45,11 +53,6 @@ public class ConnectionManager {
 
     public init(baseURL: URL) {
         self.baseURL = baseURL
-        let configuration = URLSessionConfiguration.af.default
-        configuration.protocolClasses = [MockingURLProtocol.self] + (configuration.protocolClasses ?? [])
-
-        sessionManager = Session(configuration: configuration)
-        sessionManager.sessionConfiguration.waitsForConnectivity = true
     }
 
     func doRequest<T: Decodable>(

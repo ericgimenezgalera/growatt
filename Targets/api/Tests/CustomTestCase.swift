@@ -14,7 +14,7 @@ class BaseTests: XCTestCase {
     static let host = "fake.host.com"
     static let baseUrl = URL(string: "https://\(host)")!
 
-    var connectionManager: ConnectionManager!
+    var connectionManager: ConnectionManagerStub!
 
     override func setUp() {
         connectionManager = .init(baseURL: BaseTests.baseUrl)
