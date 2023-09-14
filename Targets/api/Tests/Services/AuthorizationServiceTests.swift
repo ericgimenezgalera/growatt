@@ -26,12 +26,8 @@ final class AuthorizationServiceTests: BaseTests {
 
         // MARK: WHEN
 
-        let authenticationResult = try await connectionManager
+        try await connectionManager
             .authorise(authentication: Authentication(username: fakeUser, password: fakePassword))
-
-        // MARK: THEN
-
-        XCTAssertEqual(expectedAuthenticationResult, authenticationResult)
     }
 
     func testInvalidUserOrPassword() async throws {

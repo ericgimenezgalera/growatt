@@ -9,11 +9,11 @@
 import Foundation
 
 public protocol AuthorizationService {
-    func authorise(authentication: Authentication) async throws -> AuthenticationResult
+    func authorise(authentication: Authentication) async throws
 }
 
 extension ConnectionManager: AuthorizationService {
-    public func authorise(authentication: Authentication) async throws -> AuthenticationResult {
+    public func authorise(authentication: Authentication) async throws {
         // 401 if not authenticate
         let result: AuthenticationResult = try await ConnectionManager.Builder(self)
             .addUrlSubPath(path: "newTwoLoginAPI.do")
@@ -25,7 +25,5 @@ extension ConnectionManager: AuthorizationService {
         guard result.back.success else {
             throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
         }
-
-        return result
     }
 }

@@ -51,6 +51,10 @@ public class ConnectionManager {
         completion(.doNotRetry)
     }
 
+    public convenience init() {
+        self.init(baseURL: URL(string: "https://server-api.growatt.com")!)
+    }
+
     public init(baseURL: URL) {
         self.baseURL = baseURL
     }
