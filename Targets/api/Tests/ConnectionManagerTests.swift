@@ -156,10 +156,10 @@ final class ConnectionManagerTests: BaseTests {
 
         XCTAssertEqual(connectionManager.jSessionId, fakeToken)
         XCTAssertEqual(connectionManager.serverId, fakeServerId)
-        
+
         let jSessionKeychain: String? = try keychainWrapper.get(account: connectionManager.jSessionIdAccount)
         let serverIdKeychain: String? = try keychainWrapper.get(account: connectionManager.serverIdAccount)
-        
+
         XCTAssertEqual(jSessionKeychain, fakeToken)
         XCTAssertEqual(serverIdKeychain, fakeServerId)
     }
