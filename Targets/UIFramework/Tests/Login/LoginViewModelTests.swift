@@ -1,4 +1,5 @@
 import Combine
+import DIFramework
 import Foundation
 @testable import UIFramework
 import XCTest

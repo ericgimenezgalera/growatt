@@ -19,12 +19,22 @@ let uiFramework = Project.makeFrameworkTargets(
     name: "UIFramework",
     platform: .iOS,
     dependencies: [
-        .target(name: "API")
+        .target(name: "API"),
+        .target(name: "DIFramework")
     ],
     testDependencies: []
 )
 
+let diFramework = Project.makeFrameworkTargets(
+    name: "DIFramework",
+    platform: .iOS,
+    dependencies: [],
+    testDependencies: []
+)
+
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
-let project = Project.app(name: "Growatt",
-                          platform: .iOS,
-                          additionalTargets: api + uiFramework)
+let project = Project.app(
+    name: "Growatt",
+    platform: .iOS,
+    additionalTargets: api + uiFramework + diFramework
+)

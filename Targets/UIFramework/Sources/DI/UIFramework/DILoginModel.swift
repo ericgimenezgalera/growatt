@@ -6,6 +6,7 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
+import DIFramework
 import Foundation
 
 private struct LoginModelKey: InjectionKey {
