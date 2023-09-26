@@ -6,7 +6,7 @@
 //  Copyright © 2022 eric.gimenez.galera. All rights reserved.
 //
 
-@testable import DIFramework
+@testable import DependencyInjection
 import Foundation
 import XCTest
 

@@ -1,6 +1,6 @@
-import DIFramework
+import DependencyInjection
 import Foundation
-@testable import UIFramework
+@testable import UserInterface
 import XCTest
 
 final class LoginModelTests: XCTestCase {

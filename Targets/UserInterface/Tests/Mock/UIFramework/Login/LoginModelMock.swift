@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import UIFramework
+@testable import UserInterface
 
 class LoginModelMock: LoginModel {
     var loginResult = true

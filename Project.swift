@@ -3,39 +3,49 @@ import ProjectDescriptionHelpers
 
 // MARK: - Project
 
+// Internal targets
+let apiName = "API"
+let uiName = "UserInterface"
+let diName = "DependencyInjection"
+let keyChainWrapperName = "KeychainWrapper"
+
+// External targets
+let alamofireName = "Alamofire"
+let mockerName = "Mocker"
 
 let api = Project.makeFrameworkTargets(
-    name: "API",
+    name: apiName,
     platform: .iOS,
     dependencies: [
-        .target(name: "KeyChainWrapper"),
-        .external(name: "Alamofire")
+        .target(name: keyChainWrapperName),
+        .target(name: diName),
+        .external(name: alamofireName)
     ],
     testDependencies: [
-        .external(name: "Mocker")
+        .external(name: mockerName)
     ]
 )
 
 let uiFramework = Project.makeFrameworkTargets(
-    name: "UIFramework",
+    name: uiName,
     platform: .iOS,
     dependencies: [
-        .target(name: "API"),
-        .target(name: "DIFramework")
+        .target(name: apiName),
+        .target(name: diName)
     ],
     testDependencies: []
 )
 
 
 let diFramework = Project.makeFrameworkTargets(
-    name: "DIFramework",
+    name: diName,
     platform: .iOS,
     dependencies: [],
     testDependencies: []
 )
 
 let keyChainWrapper = Project.makeFrameworkTargets(
-    name: "KeyChainWrapper",
+    name: keyChainWrapperName,
     platform: .iOS,
     dependencies: [],
     testDependencies: []

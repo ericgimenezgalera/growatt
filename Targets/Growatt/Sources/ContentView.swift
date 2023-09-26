@@ -7,7 +7,7 @@
 //
 
 import SwiftUI
-import UIFramework
+import UserInterface
 
 struct ContentView: View {
     @StateObject private var loginNavigation: LoginNavigationViewModelImpl = .init()

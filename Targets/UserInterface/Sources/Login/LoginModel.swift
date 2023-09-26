@@ -7,7 +7,7 @@
 //
 
 import API
-import DIFramework
+import DependencyInjection
 import Foundation
 
 protocol LoginModel {

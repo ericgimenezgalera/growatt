@@ -7,7 +7,9 @@
 
 import Foundation
 
-public enum KeychainWraperImpl: KeychainWrapper {
+public class KeychainWraperImpl: KeychainWrapper {
+    public init() {}
+
     public func set(value: Data, account: String) throws {
         if try KeychainOperations.exists(account: account) {
             try KeychainOperations.update(value: value, account: account)

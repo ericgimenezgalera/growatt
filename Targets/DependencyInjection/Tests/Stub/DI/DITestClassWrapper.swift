@@ -6,7 +6,7 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
-import DIFramework
+import DependencyInjection
 import Foundation
 
 private struct TestClassKey: InjectionKey {

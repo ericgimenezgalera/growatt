@@ -1,6 +1,6 @@
 import API
 import SwiftUI
-import UIFramework
+import UserInterface
 
 @main
 struct GrowattApp: App {

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@testable import UIFramework
+@testable import UserInterface
 import XCTest
 
 class LoginNavigationViewModelMock: LoginNavigationViewModel {
