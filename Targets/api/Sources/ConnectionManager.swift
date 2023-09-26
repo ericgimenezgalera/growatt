@@ -9,7 +9,7 @@ import Alamofire
 import Foundation
 
 public enum ConnectionManagerError: Error, Equatable {
-    case internalError
+    case internalError(_ error: Error)
     case invalidStatusCode(expectedStatusCodes: [Int], receivedStatusCode: Int?)
     case parsingError
 
@@ -34,6 +34,10 @@ public class ConnectionManager {
     typealias HTTPResponseHeaders = [String: String]
 
     let baseURL: URL
+    public var isAuthenticate: Bool {
+        !jSessionId.isEmpty && !serverId.isEmpty
+    }
+
     private(set) var jSessionId: String = ""
     private(set) var serverId: String = ""
     private var internalSessionManager: Session?
@@ -76,11 +80,11 @@ public class ConnectionManager {
 
         let response = await task.response
 
-        if response.error != nil {
-            throw ConnectionManagerError.internalError
+        if let error = response.error {
+            throw ConnectionManagerError.internalError(error)
         }
 
-        updateStoredCredentials(response.response?.headers)
+        try updateStoredCredentials(response.response?.headers)
 
         guard let statusCode = response.response?.statusCode, validStatusCodes.contains(statusCode) else {
             throw ConnectionManagerError.invalidStatusCode(
@@ -91,8 +95,11 @@ public class ConnectionManager {
         return try await task.value
     }
 
-    private func updateStoredCredentials(_ headers: HTTPHeaders?) {
+    private func updateStoredCredentials(_ headers: HTTPHeaders?) throws {
         if let line = headers?["Set-Cookie"] {
+            var jSessionId = ""
+            var serverId = ""
+
             let headerLines = line.split(separator: ";")
             for line in headerLines {
                 let keyValue = line.split(separator: "=", maxSplits: 1)
@@ -102,7 +109,18 @@ public class ConnectionManager {
                     serverId = String(value)
                 }
             }
+
+            guard !jSessionId.isEmpty, !serverId.isEmpty else {
+                return
+            }
+
+            try setCredentials(jSessionId: jSessionId, serverId: serverId)
         }
+    }
+
+    private func setCredentials(jSessionId: String, serverId: String) throws {
+        self.jSessionId = jSessionId
+        self.serverId = serverId
     }
 
     func debugDoRequest(
@@ -122,7 +140,7 @@ public class ConnectionManager {
         let response = await task.response
 
         if let error = response.error {
-            throw ConnectionManagerError.internalError
+            throw ConnectionManagerError.internalError(error)
         }
 
         let response2 = String(data: response.data!, encoding: .utf8)!

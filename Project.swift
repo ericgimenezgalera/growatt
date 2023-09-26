@@ -8,6 +8,7 @@ let api = Project.makeFrameworkTargets(
     name: "API",
     platform: .iOS,
     dependencies: [
+        .target(name: "KeyChainWrapper"),
         .external(name: "Alamofire")
     ],
     testDependencies: [
@@ -25,8 +26,16 @@ let uiFramework = Project.makeFrameworkTargets(
     testDependencies: []
 )
 
+
 let diFramework = Project.makeFrameworkTargets(
     name: "DIFramework",
+    platform: .iOS,
+    dependencies: [],
+    testDependencies: []
+)
+
+let keyChainWrapper = Project.makeFrameworkTargets(
+    name: "KeyChainWrapper",
     platform: .iOS,
     dependencies: [],
     testDependencies: []
@@ -36,5 +45,5 @@ let diFramework = Project.makeFrameworkTargets(
 let project = Project.app(
     name: "Growatt",
     platform: .iOS,
-    additionalTargets: api + uiFramework + diFramework
+    additionalTargets: api + uiFramework + diFramework + keyChainWrapper
 )

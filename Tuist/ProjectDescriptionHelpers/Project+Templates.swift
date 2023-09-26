@@ -18,16 +18,17 @@ extension Project {
 
     /// Helper function to create the Project for this ExampleApp
     public static func app(name: String, platform: Platform, additionalTargets: [Target]) -> Project {
-        let frameworkTargets = additionalTargets.filter({!$0.bundleId.contains("Test") })
-        let testTargets = additionalTargets.filter({$0.bundleId.contains("Test") })
-        
-        var targets = makeAppTargets(name: name,
-                                     platform: platform,
-                                     dependencies: frameworkTargets.map { TargetDependency.target(name: $0.name) })
+        var targets = makeAppTargets(
+            name: name,
+            platform: platform,
+            dependencies: additionalTargets.filter({!$0.bundleId.contains("Test") }).map { TargetDependency.target(name: $0.name) }
+        )
         targets += additionalTargets
-        return Project(name: name,
-                       organizationName: "eric.gimenez.galera",
-                       targets: targets)
+        return Project(
+            name: name,
+            organizationName: "eric.gimenez.galera",
+            targets: targets
+        )
     }
 
     // MARK: - Private
@@ -42,10 +43,7 @@ extension Project {
                 infoPlist: .default,
                 sources: ["Targets/\(name)/Sources/**"],
                 resources: [],
-                scripts: [
-                    .pre(script: swiftFormatScript, name: "Swift format"),
-                    .pre(script: swiftlintScript, name: "Swiftlint")
-                ],
+                scripts: getCommonPreScripts(name),
                 dependencies: dependencies)
         testDependencies.append(TargetDependency.target(name: name))
         
@@ -56,10 +54,7 @@ extension Project {
                 infoPlist: .default,
                 sources: ["Targets/\(name)/Tests/**"],
                 resources: [],
-                scripts: [
-                   .pre(script: swiftFormatScript, name: "Swift format"),
-                   .pre(script: swiftlintScript, name: "Swiftlint")
-                ],
+                scripts: getCommonPreScripts(name),
                 dependencies: testDependencies)
         return [sources, tests]
     }
@@ -82,10 +77,7 @@ extension Project {
             infoPlist: .extendingDefault(with: infoPlist),
             sources: ["Targets/\(name)/Sources/**"],
             resources: ["Targets/\(name)/Resources/**"],
-            scripts: [
-                .pre(script: swiftFormatScript, name: "Swift format"),
-                .pre(script: swiftlintScript, name: "Swiftlint")
-            ],
+            scripts: getCommonPreScripts(name),
             dependencies: dependencies
         )
 
@@ -96,13 +88,17 @@ extension Project {
             bundleId: "eric.gimenez.galera.\(name)Tests",
             infoPlist: .default,
             sources: ["Targets/\(name)/Tests/**"],
-            scripts: [
-                .pre(script: swiftFormatScript, name: "Swift format"),
-                .pre(script: swiftlintScript, name: "Swiftlint")
-            ],
+            scripts: getCommonPreScripts(name),
             dependencies: [
                 .target(name: "\(name)")
         ])
         return [mainTarget, testTarget]
+    }
+    
+    private static func getCommonPreScripts(_ targetName: String) -> [TargetScript] {
+        [
+            .pre(script: swiftFormatScript, name: "Swift format", outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SwiftformatOutput"]),
+            .pre(script: swiftlintScript, name: "Swiftlint", outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SwiftlintOutput"])
+        ]
     }
 }

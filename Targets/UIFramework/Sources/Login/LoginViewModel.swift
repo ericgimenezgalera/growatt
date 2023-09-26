@@ -45,7 +45,6 @@ class LoginViewModel: ViewModel {
             loginNavigationViewModel.navigate(route: .onLogged)
         }
         tasks.append(task)
-        let patata = task
     }
 
     @MainActor func showInvalidPassword() {

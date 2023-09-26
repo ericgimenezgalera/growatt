@@ -6,6 +6,7 @@
 //  Copyright © 2022 eric.gimenez.galera. All rights reserved.
 //
 
+import Alamofire
 @testable import API
 import Foundation
 import Mocker
@@ -62,7 +63,7 @@ final class ConnectionManagerTests: BaseTests {
             // MARK: THEN
 
             if let error = error as? ConnectionManagerError {
-                XCTAssertEqual(error, .internalError)
+                XCTAssertEqual(error, .internalError(AFError.responseSerializationFailed(reason: .inputFileNil)))
             } else {
                 XCTFail("Invalid error")
             }
