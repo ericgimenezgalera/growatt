@@ -8,6 +8,7 @@
 
 import Alamofire
 @testable import API
+import DependencyInjection
 import Foundation
 import Mocker
 import XCTest
@@ -16,6 +17,13 @@ final class ConnectionManagerTests: BaseTests {
     private let fakePath = "fake/path"
     private let fakeToken = "fakeToken"
     private let fakeServerId = "1234567890"
+    var keychainWrapper: KeychainWrapperStub!
+
+    override func setUp() {
+        super.setUp()
+        keychainWrapper = KeychainWrapperStub()
+        InjectedValues[\.keychainWrapper] = keychainWrapper
+    }
 
     func testSuccessConnection() async throws {
         // MARK: Given
@@ -148,5 +156,11 @@ final class ConnectionManagerTests: BaseTests {
 
         XCTAssertEqual(connectionManager.jSessionId, fakeToken)
         XCTAssertEqual(connectionManager.serverId, fakeServerId)
+        
+        let jSessionKeychain: String? = try keychainWrapper.get(account: connectionManager.jSessionIdAccount)
+        let serverIdKeychain: String? = try keychainWrapper.get(account: connectionManager.serverIdAccount)
+        
+        XCTAssertEqual(jSessionKeychain, fakeToken)
+        XCTAssertEqual(serverIdKeychain, fakeServerId)
     }
 }

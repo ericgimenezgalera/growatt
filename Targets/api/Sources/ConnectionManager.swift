@@ -6,7 +6,9 @@
 //
 
 import Alamofire
+import DependencyInjection
 import Foundation
+import KeychainWrapper
 
 public enum ConnectionManagerError: Error, Equatable {
     case internalError(_ error: Error)
@@ -32,6 +34,10 @@ public enum ConnectionManagerError: Error, Equatable {
 
 public class ConnectionManager {
     typealias HTTPResponseHeaders = [String: String]
+
+    @Injected(\.keychainWrapper) var keychainWrapper: KeychainWrapper
+    let jSessionIdAccount = "GrowattJSessionId"
+    let serverIdAccount = "GrowattServerId"
 
     let baseURL: URL
     public var isAuthenticate: Bool {
@@ -61,6 +67,7 @@ public class ConnectionManager {
 
     public init(baseURL: URL) {
         self.baseURL = baseURL
+        loadStoredCredencitals()
     }
 
     func doRequest<T: Decodable>(
@@ -119,6 +126,21 @@ public class ConnectionManager {
     }
 
     private func setCredentials(jSessionId: String, serverId: String) throws {
+        self.jSessionId = jSessionId
+        self.serverId = serverId
+
+        try keychainWrapper.set(value: jSessionId, account: jSessionIdAccount)
+        try keychainWrapper.set(value: serverId, account: serverIdAccount)
+    }
+
+    private func loadStoredCredencitals() {
+        guard
+            let jSessionId: String = try? keychainWrapper.get(account: jSessionIdAccount),
+            let serverId: String = try? keychainWrapper.get(account: serverIdAccount)
+        else {
+            return
+        }
+
         self.jSessionId = jSessionId
         self.serverId = serverId
     }
