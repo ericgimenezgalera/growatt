@@ -30,6 +30,10 @@ public class KeychainWraperImpl: KeychainWrapper {
         try set(value: value.description, account: account)
     }
 
+    public func set(value: Bool, account: String) throws {
+        try set(value: value.description, account: account)
+    }
+
     public func get(account: String) throws -> Data? {
         if try KeychainOperations.exists(account: account) {
             return try KeychainOperations.retreive(account: account)
@@ -52,6 +56,14 @@ public class KeychainWraperImpl: KeychainWrapper {
         }
 
         return Int(string)
+    }
+
+    public func get(account: String) throws -> Bool? {
+        guard let string: String = try get(account: account) else {
+            return nil
+        }
+
+        return Bool(string)
     }
 
     public func delete(account: String) throws {

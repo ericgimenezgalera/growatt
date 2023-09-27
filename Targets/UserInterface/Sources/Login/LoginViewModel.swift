@@ -42,7 +42,7 @@ class LoginViewModel: ViewModel {
                 return
             }
 
-            loginNavigationViewModel.navigate(route: .onLogged)
+            loginNavigationViewModel.cleanStackAndNavigate(route: .onLogged)
         }
         tasks.append(task)
     }

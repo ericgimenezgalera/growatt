@@ -6,6 +6,7 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
+import API
 import SwiftUI
 import UserInterface
 
@@ -16,14 +17,18 @@ struct ContentView: View {
 
     public var body: some View {
         NavigationStack(path: $loginNavigation.path) {
-            LoginView()
-                .environmentObject(loginNavigation)
-                .navigationDestination(for: LoginRoute.self) { routes in
-                    switch routes {
-                    case .onLogged:
-                        HomeView()
+            if ConnectionManager().isAuthenticate {
+                HomeView()
+            } else {
+                LoginView()
+                    .environmentObject(loginNavigation)
+                    .navigationDestination(for: LoginRoute.self) { routes in
+                        switch routes {
+                        case .onLogged:
+                            HomeView()
+                        }
                     }
-                }
+            }
         }
     }
 }

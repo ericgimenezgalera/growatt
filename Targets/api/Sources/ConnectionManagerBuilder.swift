@@ -15,7 +15,6 @@ extension ConnectionManager {
         private let encoder: JSONEncoder
         private let connectionManager: ConnectionManager
         private var validStatusCode = [200]
-        private var useAuthentication = false
         private var traceId: String?
 
         init(
@@ -62,11 +61,6 @@ extension ConnectionManager {
             return self
         }
 
-        func addAuthentication() -> Builder {
-            useAuthentication = true
-            return self
-        }
-
         func addHeaders(headers: HTTPHeaders) -> Builder {
             headers.forEach { httpHeader in
                 request.headers.add(httpHeader)
@@ -102,7 +96,6 @@ extension ConnectionManager {
         func doRequest<T: Codable>() async throws -> T {
             try await connectionManager.doRequest(
                 validStatusCodes: validStatusCode,
-                useAuthentication: useAuthentication,
                 request: request
             )
         }
@@ -110,7 +103,6 @@ extension ConnectionManager {
         func debugDoRequest() async throws -> String {
             try await connectionManager.debugDoRequest(
                 validStatusCodes: validStatusCode,
-                useAuthentication: useAuthentication,
                 request: request
             )
         }

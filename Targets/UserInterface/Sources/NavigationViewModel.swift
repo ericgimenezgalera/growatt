@@ -14,6 +14,11 @@ public class NavigationViewModel<T: Hashable>: ObservableObject {
 
     public required init() {}
 
+    @MainActor public func cleanStackAndNavigate(route: T) {
+        path.removeLast(path.count)
+        navigate(route: route)
+    }
+
     @MainActor public func navigate(route: T) {
         path.append(route)
     }

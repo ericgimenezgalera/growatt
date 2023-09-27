@@ -16,6 +16,7 @@ public enum LoginRoute: String, Hashable {
 
 public protocol LoginNavigationViewModel {
     func navigate(route: LoginRoute)
+    func cleanStackAndNavigate(route: LoginRoute)
     func pop()
     init()
 }

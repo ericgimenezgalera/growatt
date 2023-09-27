@@ -15,16 +15,11 @@ public protocol AuthorizationService {
 extension ConnectionManager: AuthorizationService {
     public func authorise(authentication: Authentication) async throws {
         // 401 if not authenticate
-        let result: AuthenticationResult = try await ConnectionManager.Builder(self)
+        _ = try await ConnectionManager.Builder(self)
             .addUrlSubPath(path: "login")
-            .addAuthentication()
             .httpMethod(.post)
             .encodeParameterInURL(parameter: authentication, includeBody: false)
             .validStatusCode(200)
-            .doRequest()
-
-        guard result.result == 1 else {
-            throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
-        }
+            .doRequest() as AuthenticationResult
     }
 }

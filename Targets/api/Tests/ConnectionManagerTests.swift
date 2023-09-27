@@ -39,7 +39,6 @@ final class ConnectionManagerTests: BaseTests {
 
         let authenticationResult: AuthenticationResult = try await connectionManager.doRequest(
             validStatusCodes: [200],
-            useAuthentication: false,
             request: request
         )
 
@@ -63,7 +62,6 @@ final class ConnectionManagerTests: BaseTests {
         do {
             _ = try await connectionManager.doRequest(
                 validStatusCodes: [200],
-                useAuthentication: false,
                 request: request
             ) as String
             XCTFail("Exception not thrown out")
@@ -93,7 +91,6 @@ final class ConnectionManagerTests: BaseTests {
         do {
             _ = try await connectionManager.doRequest(
                 validStatusCodes: [400, 404],
-                useAuthentication: false,
                 request: request
             ) as AuthenticationResult
             XCTFail("Exception not thrown out")
@@ -122,7 +119,6 @@ final class ConnectionManagerTests: BaseTests {
 
         let authenticationResult: AuthenticationResult = try await connectionManager.doRequest(
             validStatusCodes: [400, 404],
-            useAuthentication: false,
             request: request
         )
 
@@ -147,7 +143,6 @@ final class ConnectionManagerTests: BaseTests {
 
         _ = try await connectionManager.doRequest(
             validStatusCodes: [200],
-            useAuthentication: true,
             request: URLRequest(
                 url: URL(string: "https://\(Self.host)/\(fakePath)")!,
                 method: .post

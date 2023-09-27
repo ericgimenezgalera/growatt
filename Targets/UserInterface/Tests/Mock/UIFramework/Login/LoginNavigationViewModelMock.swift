@@ -24,6 +24,10 @@ class LoginNavigationViewModelMock: LoginNavigationViewModel {
         navigateExpectation?.fulfill()
     }
 
+    func cleanStackAndNavigate(route: UserInterface.LoginRoute) {
+        navigate(route: route)
+    }
+
     func pop() {
         popExpectation?.fulfill()
     }

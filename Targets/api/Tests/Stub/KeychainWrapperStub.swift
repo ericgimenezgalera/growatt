@@ -32,6 +32,10 @@ class KeychainWrapperStub: KeychainWrapper {
         try set(value: "\(value)", account: account)
     }
 
+    func set(value: Bool, account: String) throws {
+        try set(value: value.description, account: account)
+    }
+
     func get(account: String) throws -> Data? {
         values[account]
     }
@@ -50,6 +54,14 @@ class KeychainWrapperStub: KeychainWrapper {
         }
 
         return Int(string)
+    }
+
+    func get(account: String) throws -> Bool? {
+        guard let string: String = try get(account: account) else {
+            return nil
+        }
+
+        return Bool(string)
     }
 
     func delete(account: String) throws {
