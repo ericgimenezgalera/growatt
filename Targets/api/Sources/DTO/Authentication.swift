@@ -10,22 +10,16 @@ import CryptoKit
 import Foundation
 
 public struct Authentication: Codable {
-    public let username: String
+    public let account: String
     public let password: String
 
-    public init(username: String, password: String) {
-        self.username = username
-        self.password = Self.MD5(password)
+    public init(account: String, password: String) {
+        self.account = account
+        self.password = password
     }
 
     public enum CodingKeys: String, CodingKey {
-        case username = "userName"
+        case account
         case password
-    }
-
-    private static func MD5(_ string: String) -> String {
-        let messageData = string.data(using: .utf8)!
-
-        return Insecure.MD5.hash(data: messageData).map { String(format: "%02hhx", $0) }.joined()
     }
 }

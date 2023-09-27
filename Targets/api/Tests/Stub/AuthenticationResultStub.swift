@@ -11,10 +11,10 @@ import Foundation
 
 extension AuthenticationResult {
     static func makeStub() -> AuthenticationResult {
-        AuthenticationResult(back: AuthenticationResultDetails.makeStub())
+        AuthenticationResult(result: 1)
     }
 
-    static func makeStub(authenticationResultDetails: AuthenticationResultDetails) -> AuthenticationResult {
-        AuthenticationResult(back: authenticationResultDetails)
+    static func makeStub(_ result: Int) -> AuthenticationResult {
+        AuthenticationResult(result: result)
     }
 }

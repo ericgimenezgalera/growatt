@@ -50,6 +50,7 @@ public class ConnectionManager {
     var sessionManager: Session {
         guard let internalSessionManager = internalSessionManager else {
             AF.sessionConfiguration.waitsForConnectivity = true
+            AF.sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
             internalSessionManager = AF
             return AF
         }
@@ -62,7 +63,7 @@ public class ConnectionManager {
     }
 
     public convenience init() {
-        self.init(baseURL: URL(string: "https://server-api.growatt.com")!)
+        self.init(baseURL: URL(string: "https://server.growatt.com/")!)
     }
 
     public init(baseURL: URL) {
