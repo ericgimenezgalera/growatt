@@ -30,7 +30,8 @@ enum LoginViewModelError: LocalizedError {
 class LoginViewModel: ViewModel {
     @Injected(\.loginModel) private var loginModel: LoginModel
     @MainActor @Published var error: LoginViewModelError?
-
+    @Published var isLoading: Bool = true
+    
     func login(username: String, password: String, loginNavigationViewModel: LoginNavigationViewModel) {
         let task = Task.detached(priority: .background) { [weak self] in
             guard let loginModel = self?.loginModel else {
