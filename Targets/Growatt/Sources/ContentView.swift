@@ -18,14 +18,14 @@ struct ContentView: View {
     public var body: some View {
         NavigationStack(path: $loginNavigation.path) {
             if ConnectionManager().isAuthenticate {
-                HomeView()
+                MenuView()
             } else {
                 LoginView()
                     .environmentObject(loginNavigation)
                     .navigationDestination(for: LoginRoute.self) { routes in
                         switch routes {
                         case .onLogged:
-                            HomeView()
+                            MenuView()
                         }
                     }
             }

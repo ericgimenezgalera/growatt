@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  SettingsView.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 14/9/23.
@@ -9,18 +9,18 @@
 import Foundation
 import SwiftUI
 
-public struct HomeView: View {
+public struct SettingsView: View {
     public init() {}
 
     public var body: some View {
         VStack {
-            Text("Home")
+            Text("Settings")
         }
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
+struct Settings_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        SettingsView()
     }
 }
