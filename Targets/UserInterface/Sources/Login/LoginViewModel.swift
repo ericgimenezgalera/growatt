@@ -32,7 +32,7 @@ class LoginViewModel: ViewModel {
     @MainActor @Published var error: LoginViewModelError?
     @Published var isLoading: Bool = true
 
-    func login(username: String, password: String, loginNavigationViewModel: LoginNavigationViewModel) {
+    func login(username: String, password: String, navigationViewModel: NavigationViewModel) {
         let task = Task.detached(priority: .background) { [weak self] in
             guard let loginModel = self?.loginModel else {
                 return
@@ -43,7 +43,7 @@ class LoginViewModel: ViewModel {
                 return
             }
 
-            loginNavigationViewModel.cleanStackAndNavigate(route: .onLogged)
+            await navigationViewModel.cleanStackAndNavigate(route: LoginNavigationRoute.onLogged)
         }
         tasks.append(task)
     }

@@ -11,7 +11,7 @@ import DependencyInjection
 import Foundation
 
 private struct AuthorizationServiceKey: InjectionKey {
-    static var currentValue: AuthorizationService = ConnectionManager()
+    static var currentValue: AuthorizationService = ConnectionManager.shared
 }
 
 extension InjectedValues {

@@ -1,5 +1,5 @@
 //
-//  LoginNavigationViewModelMock.swift
+//  NavigationViewModelMock.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 14/9/23.
@@ -10,25 +10,24 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-class LoginNavigationViewModelMock: LoginNavigationViewModel {
+class NavigationViewModelMock: NavigationViewModel {
     var navigateExpectation: XCTestExpectation?
-    var navigateRoute: LoginRoute?
+    var navigateRoute: (any Hashable)?
 
     var popExpectation: XCTestExpectation?
 
     required init() {}
 
-    func navigate(route: LoginRoute) {
+    @MainActor public override func navigate(route: any Hashable) async {
         navigateRoute = route
-
         navigateExpectation?.fulfill()
     }
 
-    func cleanStackAndNavigate(route: UserInterface.LoginRoute) {
-        navigate(route: route)
+    @MainActor public override func cleanStackAndNavigate(route: any Hashable) async {
+        await navigate(route: route)
     }
 
-    func pop() {
+    @MainActor public override func pop() async {
         popExpectation?.fulfill()
     }
 }

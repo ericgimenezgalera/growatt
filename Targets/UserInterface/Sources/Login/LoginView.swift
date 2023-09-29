@@ -1,11 +1,11 @@
 import SwiftUI
 
 public struct LoginView: View {
-    @State var username: String = ""
+    @AppStorage("username") var username: String = ""
     @State var password: String = ""
     @State var showPassword: Bool = false
     @State private var isLoading = false
-    @EnvironmentObject var homeNavigationViewModel: LoginNavigationViewModelImpl
+    @EnvironmentObject var navigationViewModel: NavigationViewModel
     @StateObject private var viewModel = LoginViewModel()
 
     var isSignInButtonDisabled: Bool {
@@ -62,13 +62,13 @@ public struct LoginView: View {
 
             }.padding(.horizontal)
             Spacer()
-        
+
             Button {
                 isLoading = true
                 viewModel.login(
                     username: username,
                     password: password,
-                    loginNavigationViewModel: homeNavigationViewModel
+                    navigationViewModel: navigationViewModel
                 )
             } label: {
                 Text("Sign In")
@@ -95,17 +95,16 @@ public struct LoginView: View {
                 viewModel.error = nil
                 isLoading = false
             }
-        ), error: viewModel.error) {
-        }
-        .disabled(isLoading)
-        .overlay(Group {
-            if isLoading {
-                ZStack {
-                    Color(white: 0, opacity: 0.75)
-                    ProgressView().tint(.white)
-                }.ignoresSafeArea()
-            }
-        })
+        ), error: viewModel.error) {}
+            .disabled(isLoading)
+            .overlay(Group {
+                if isLoading {
+                    ZStack {
+                        Color(white: 0, opacity: 0.75)
+                        ProgressView().tint(.white)
+                    }.ignoresSafeArea()
+                }
+            })
     }
 }
 

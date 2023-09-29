@@ -35,25 +35,27 @@ public enum ConnectionManagerError: Error, Equatable {
 public class ConnectionManager {
     typealias HTTPResponseHeaders = [String: String]
 
+    public static let shared: ConnectionManager = .init()
+
     @Injected(\.keychainWrapper) var keychainWrapper: KeychainWrapper
     let jSessionIdAccount = "GrowattJSessionId"
     let serverIdAccount = "GrowattServerId"
     let isAuthenticateAccount = "GrowattIsAuthenticate"
 
     let baseURL: URL
-    public private(set) var isAuthenticate: Bool = false {
+    public internal(set) var isAuthenticate: Bool = false {
         didSet {
             try? keychainWrapper.set(value: isAuthenticate, account: isAuthenticateAccount)
         }
     }
 
-    private(set) var jSessionId: String = "" {
+    var jSessionId: String = "" {
         didSet {
             try? keychainWrapper.set(value: jSessionId, account: jSessionIdAccount)
         }
     }
 
-    private(set) var serverId: String = "" {
+    var serverId: String = "" {
         didSet {
             try? keychainWrapper.set(value: serverId, account: serverIdAccount)
         }

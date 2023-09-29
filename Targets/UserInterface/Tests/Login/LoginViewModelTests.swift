@@ -9,28 +9,28 @@ final class LoginViewModelTests: XCTestCase {
     let password = "fakePassword"
     var loginViewModel: LoginViewModel!
     var loginModelMock: LoginModelMock!
-    var loginNavigationViewModelMock: LoginNavigationViewModelMock!
+    var navigationViewModelMock: NavigationViewModelMock!
 
     override func setUp() {
         loginViewModel = LoginViewModel()
         loginModelMock = LoginModelMock()
-        loginNavigationViewModelMock = LoginNavigationViewModelMock()
+        navigationViewModelMock = NavigationViewModelMock()
         InjectedValues[\.loginModel] = loginModelMock
     }
 
     func test_success() {
         loginModelMock.loginResult = true
         let navigateExpectation = expectation(description: "Navigation success")
-        loginNavigationViewModelMock.navigateExpectation = navigateExpectation
+        navigationViewModelMock.navigateExpectation = navigateExpectation
 
         loginViewModel.login(
             username: username,
             password: password,
-            loginNavigationViewModel: loginNavigationViewModelMock
+            navigationViewModel: navigationViewModelMock
         )
 
         wait(for: [navigateExpectation])
-        XCTAssertEqual(loginNavigationViewModelMock.navigateRoute, .onLogged)
+        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
     }
 
     func test_denied() {
@@ -43,7 +43,7 @@ final class LoginViewModelTests: XCTestCase {
             loginViewModel.login(
                 username: username,
                 password: password,
-                loginNavigationViewModel: loginNavigationViewModelMock
+                navigationViewModel: navigationViewModelMock
             )
 
             switch await loginViewModel.tasks.first?.result {

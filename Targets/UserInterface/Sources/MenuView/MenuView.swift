@@ -10,6 +10,8 @@ import Foundation
 import SwiftUI
 
 public struct MenuView: View {
+    @EnvironmentObject var navigationViewModel: NavigationViewModel
+
     public init() {}
 
     public var body: some View {
@@ -22,6 +24,7 @@ public struct MenuView: View {
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
+                .environmentObject(navigationViewModel)
         }
     }
 }
