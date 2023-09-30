@@ -23,6 +23,9 @@ final class SettingsViewModelTests: XCTestCase {
         settingsViewModel.logout(navigationViewModel: navigationViewModelMock)
 
         wait(for: [navigateExpectation])
-        XCTAssertEqual(navigationViewModelMock.navigateRoute as? SettingsNavigationRoute, SettingsNavigationRoute.onLogout)
+        XCTAssertEqual(
+            navigationViewModelMock.navigateRoute as? SettingsNavigationRoute,
+            SettingsNavigationRoute.onLogout
+        )
     }
 }

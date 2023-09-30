@@ -16,7 +16,7 @@ class SettingsViewModel: ViewModel {
     func logout(navigationViewModel: NavigationViewModel) {
         let task = Task.detached(priority: .background) { [weak self] in
             self?.settingsModel.logout()
-                
+
             await navigationViewModel.cleanStackAndNavigate(route: SettingsNavigationRoute.onLogout)
         }
         tasks.append(task)

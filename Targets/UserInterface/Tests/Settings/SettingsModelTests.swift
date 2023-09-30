@@ -17,7 +17,7 @@ final class SettingsModelTests: XCTestCase {
         let logoutExpectation = expectation(description: "Logout success")
         sessionManagerMock.logoutExpectation = logoutExpectation
         model.logout()
-        
+
         wait(for: [logoutExpectation])
     }
 }

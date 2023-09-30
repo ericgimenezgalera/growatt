@@ -10,5 +10,5 @@ import Foundation
 @testable import UserInterface
 
 class SettingsModelMock: SettingsModel {
-    func logout() { }
+    func logout() {}
 }
