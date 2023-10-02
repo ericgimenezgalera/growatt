@@ -17,11 +17,7 @@ struct ContentView: View {
 
     public var body: some View {
         NavigationStack(path: $navigationModel.path) {
-            if ConnectionManager().isAuthenticate {
-                generateMenuView()
-            } else {
-                generateLoginView()
-            }
+            generateLoginView()
         }.navigationDestination(for: LoginNavigationRoute.self) { routes in
             switch routes {
             case .onLogged:

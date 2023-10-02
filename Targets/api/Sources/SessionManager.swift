@@ -14,8 +14,12 @@ public protocol SessionManager {
 
 extension ConnectionManager: SessionManager {
     public func logout() {
-        isAuthenticate = false
-        jSessionId = ""
-        serverId = ""
+        guard let cookies = HTTPCookieStorage.shared.cookies else {
+            return
+        }
+
+        for cookie in cookies {
+            HTTPCookieStorage.shared.deleteCookie(cookie)
+        }
     }
 }

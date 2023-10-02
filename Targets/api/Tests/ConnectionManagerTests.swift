@@ -126,36 +126,4 @@ final class ConnectionManagerTests: BaseTests {
 
         XCTAssertEqual(expectedAuthenticationResult, authenticationResult)
     }
-
-    func testAuthentication() async throws {
-        let expectedAuthenticationResult = AuthenticationResult.makeStub()
-        let mockedData = try JSONEncoder().encode(expectedAuthenticationResult)
-
-        XCTAssertTrue(connectionManager.serverId.isEmpty)
-        XCTAssertTrue(connectionManager.jSessionId.isEmpty)
-
-        stubResponse(
-            subpath: fakePath,
-            statusCode: 200,
-            data: [.post: mockedData],
-            additionalHeaders: ["Set-Cookie": "JSESSIONID=\(fakeToken);SERVERID=\(fakeServerId)"]
-        )
-
-        _ = try await connectionManager.doRequest(
-            validStatusCodes: [200],
-            request: URLRequest(
-                url: URL(string: "https://\(Self.host)/\(fakePath)")!,
-                method: .post
-            )
-        ) as AuthenticationResult
-
-        XCTAssertEqual(connectionManager.jSessionId, fakeToken)
-        XCTAssertEqual(connectionManager.serverId, fakeServerId)
-
-        let jSessionKeychain: String? = try keychainWrapper.get(account: connectionManager.jSessionIdAccount)
-        let serverIdKeychain: String? = try keychainWrapper.get(account: connectionManager.serverIdAccount)
-
-        XCTAssertEqual(jSessionKeychain, fakeToken)
-        XCTAssertEqual(serverIdKeychain, fakeServerId)
-    }
 }
