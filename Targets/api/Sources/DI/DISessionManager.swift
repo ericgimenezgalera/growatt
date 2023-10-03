@@ -6,7 +6,6 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
-import API
 import DependencyInjection
 import Foundation
 
@@ -15,7 +14,7 @@ private struct SessionManagerKey: InjectionKey {
 }
 
 extension InjectedValues {
-    var sessionManager: SessionManager {
+    public var sessionManager: SessionManager {
         get { Self[SessionManagerKey.self] }
         set { Self[SessionManagerKey.self] = newValue }
     }

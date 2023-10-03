@@ -6,7 +6,6 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
-import API
 import DependencyInjection
 import Foundation
 
@@ -15,7 +14,7 @@ private struct AuthorizationServiceKey: InjectionKey {
 }
 
 extension InjectedValues {
-    var authorizationService: AuthorizationService {
+    public var authorizationService: AuthorizationService {
         get { Self[AuthorizationServiceKey.self] }
         set { Self[AuthorizationServiceKey.self] = newValue }
     }

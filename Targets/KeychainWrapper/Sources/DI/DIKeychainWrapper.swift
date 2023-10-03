@@ -8,14 +8,13 @@
 
 import DependencyInjection
 import Foundation
-import KeychainWrapper
 
 private struct KeychainWrapperKey: InjectionKey {
     static var currentValue: KeychainWrapper = KeychainWraperImpl()
 }
 
 extension InjectedValues {
-    var keychainWrapper: KeychainWrapper {
+    public var keychainWrapper: KeychainWrapper {
         get { Self[KeychainWrapperKey.self] }
         set { Self[KeychainWrapperKey.self] = newValue }
     }
