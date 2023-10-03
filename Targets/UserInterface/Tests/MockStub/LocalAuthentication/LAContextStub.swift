@@ -1,5 +1,5 @@
 //
-//  LAContextMock.swift
+//  LAContextStub.swift
 //  KeychainWrapperTests
 //
 //  Created by Eric Gimènez Galera on 3/10/23.
@@ -13,7 +13,7 @@ enum LAContextMockError: Error {
     case generic
 }
 
-class LAContextMock: LAContext {
+class LAContextStub: LAContext {
     var canEvaluatePolicyResult = true
     var evaluatePolicy = true
     var evaluateThowError = false

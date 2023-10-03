@@ -13,8 +13,8 @@ private struct AuthorizationServiceKey: InjectionKey {
     static var currentValue: AuthorizationService = ConnectionManager.shared
 }
 
-extension InjectedValues {
-    public var authorizationService: AuthorizationService {
+public extension InjectedValues {
+    var authorizationService: AuthorizationService {
         get { Self[AuthorizationServiceKey.self] }
         set { Self[AuthorizationServiceKey.self] = newValue }
     }

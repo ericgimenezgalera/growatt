@@ -10,13 +10,13 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-class NavigationViewModelMock: NavigationViewModel {
-    var navigateExpectation: XCTestExpectation?
-    var navigateRoute: (any Hashable)?
+public class NavigationViewModelMock: NavigationViewModel {
+    public var navigateExpectation: XCTestExpectation?
+    public var navigateRoute: (any Hashable)?
 
-    required init() {}
+    public required init() {}
 
-    func navigate(route: any Hashable) async {
+    public func navigate(route: any Hashable) async {
         navigateRoute = route
         navigateExpectation?.fulfill()
     }

@@ -10,10 +10,10 @@ final class LoginModelTests: XCTestCase {
     var loginModel: LoginModelImpl!
     var authorizationServiceMock: AuthorizationServiceMock!
     var keychainWrapperMock: KeychainWrapperMock!
-    var laContextMock: LAContextMock!
+    var laContextMock: LAContextStub!
 
     override func setUp() {
-        laContextMock = LAContextMock()
+        laContextMock = LAContextStub()
         loginModel = LoginModelImpl()
         loginModel.context = laContextMock
         authorizationServiceMock = AuthorizationServiceMock()

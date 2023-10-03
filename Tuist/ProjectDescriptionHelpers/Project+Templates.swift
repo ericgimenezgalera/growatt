@@ -52,7 +52,7 @@ extension Project {
                 product: .unitTests,
                 bundleId: "eric.gimenez.galera.\(name)Tests",
                 infoPlist: .default,
-                sources: ["Targets/\(name)/Tests/**"],
+                sources: ["Targets/\(name)/Tests/**", "Targets/**/Tests/Shared/**"],
                 resources: [],
                 scripts: getCommonPreScripts(name),
                 dependencies: testDependencies)
@@ -88,7 +88,7 @@ extension Project {
             product: .unitTests,
             bundleId: "eric.gimenez.galera.\(name)Tests",
             infoPlist: .default,
-            sources: ["Targets/\(name)/Tests/**"],
+            sources: ["Targets/\(name)/Tests/**", "Targets/**/Tests/Shared/**"],
             scripts: getCommonPreScripts(name),
             dependencies: [
                 .target(name: "\(name)")

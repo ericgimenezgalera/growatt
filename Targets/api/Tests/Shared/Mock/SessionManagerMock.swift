@@ -10,10 +10,10 @@ import API
 import Foundation
 import XCTest
 
-class SessionManagerMock: SessionManager {
+public class SessionManagerMock: SessionManager {
     var logoutExpectation: XCTestExpectation?
 
-    func logout() {
+    public func logout() {
         logoutExpectation?.fulfill()
     }
 }

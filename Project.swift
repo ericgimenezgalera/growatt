@@ -47,7 +47,9 @@ let diFramework = Project.makeFrameworkTargets(
 let keyChainWrapper = Project.makeFrameworkTargets(
     name: keyChainWrapperName,
     platform: .iOS,
-    dependencies: [],
+    dependencies: [
+        .target(name: diName)
+    ],
     testDependencies: []
 )
 

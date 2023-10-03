@@ -13,8 +13,8 @@ private struct KeychainWrapperKey: InjectionKey {
     static var currentValue: KeychainWrapper = KeychainWraperImpl()
 }
 
-extension InjectedValues {
-    public var keychainWrapper: KeychainWrapper {
+public extension InjectedValues {
+    var keychainWrapper: KeychainWrapper {
         get { Self[KeychainWrapperKey.self] }
         set { Self[KeychainWrapperKey.self] = newValue }
     }

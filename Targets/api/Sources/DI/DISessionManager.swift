@@ -13,8 +13,8 @@ private struct SessionManagerKey: InjectionKey {
     static var currentValue: SessionManager = ConnectionManager.shared
 }
 
-extension InjectedValues {
-    public var sessionManager: SessionManager {
+public extension InjectedValues {
+    var sessionManager: SessionManager {
         get { Self[SessionManagerKey.self] }
         set { Self[SessionManagerKey.self] = newValue }
     }
