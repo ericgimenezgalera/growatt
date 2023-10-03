@@ -48,6 +48,22 @@ class LoginViewModel: ViewModel {
         tasks.append(task)
     }
 
+    func loginWithBiometric(username: String, navigationViewModel: NavigationViewModel) {
+        let task = Task.detached(priority: .background) { [weak self] in
+            guard let loginModel = self?.loginModel else {
+                return
+            }
+
+            guard await loginModel.loginWithBiometric(username: username)
+            else {
+                return
+            }
+
+            await navigationViewModel.navigate(route: LoginNavigationRoute.onLogged)
+        }
+        tasks.append(task)
+    }
+
     @MainActor func showInvalidPassword() {
         error = LoginViewModelError.invalidPassword
     }

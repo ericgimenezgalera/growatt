@@ -9,7 +9,7 @@
 import CryptoKit
 import Foundation
 
-public struct Authentication: Codable {
+public struct Authentication: Codable, Equatable {
     public let account: String
     public let password: String
 

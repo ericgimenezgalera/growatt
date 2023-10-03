@@ -11,8 +11,10 @@ import Foundation
 
 class AuthorizationServiceMock: AuthorizationService {
     var success: Bool = true
+    var authentication: Authentication?
 
-    func authorise(authentication _: API.Authentication) async throws {
+    func authorise(authentication: Authentication) async throws {
+        self.authentication = authentication
         guard success else {
             throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
         }

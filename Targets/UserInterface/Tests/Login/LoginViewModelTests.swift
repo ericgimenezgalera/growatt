@@ -18,7 +18,7 @@ final class LoginViewModelTests: XCTestCase {
         InjectedValues[\.loginModel] = loginModelMock
     }
 
-    func test_success() {
+    func testLoginSuccess() {
         loginModelMock.loginResult = true
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
@@ -33,7 +33,7 @@ final class LoginViewModelTests: XCTestCase {
         XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
     }
 
-    func test_denied() {
+    func testLoginDenied() {
         loginModelMock.loginResult = false
 
         let errorExpectation = expectation(description: "Navigation Error")
@@ -56,10 +56,48 @@ final class LoginViewModelTests: XCTestCase {
                     }
                 }
             default:
-                break
+                XCTFail("Not success task")
             }
         }
 
-        wait(for: [errorExpectation, completaionExpectation], timeout: 100.0)
+        wait(for: [errorExpectation, completaionExpectation])
+    }
+
+    func testLoginWithBiometricSuccess() {
+        loginModelMock.loginWithBiometric = true
+        let navigateExpectation = expectation(description: "Navigation success")
+        navigationViewModelMock.navigateExpectation = navigateExpectation
+
+        loginViewModel.loginWithBiometric(
+            username: username,
+            navigationViewModel: navigationViewModelMock
+        )
+
+        wait(for: [navigateExpectation])
+        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
+    }
+
+    func testLoginWithBiometricDenied() {
+        loginModelMock.loginWithBiometric = false
+
+        let completaionExpectation = expectation(description: "Completion task")
+
+        Task {
+            loginViewModel.loginWithBiometric(
+                username: username,
+                navigationViewModel: navigationViewModelMock
+            )
+
+            switch await loginViewModel.tasks.first?.result {
+            case .success:
+                _ = await loginViewModel.error.publisher.sink { _ in
+                    completaionExpectation.fulfill()
+                } receiveValue: { _ in }
+            default:
+                XCTFail("Not success task")
+            }
+        }
+
+        wait(for: [completaionExpectation])
     }
 }

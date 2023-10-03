@@ -17,13 +17,6 @@ final class ConnectionManagerTests: BaseTests {
     private let fakePath = "fake/path"
     private let fakeToken = "fakeToken"
     private let fakeServerId = "1234567890"
-    var keychainWrapper: KeychainWrapperStub!
-
-    override func setUp() {
-        super.setUp()
-        keychainWrapper = KeychainWrapperStub()
-        InjectedValues[\.keychainWrapper] = keychainWrapper
-    }
 
     func testSuccessConnection() async throws {
         // MARK: Given

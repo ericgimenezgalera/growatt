@@ -11,8 +11,13 @@ import Foundation
 
 class LoginModelMock: LoginModel {
     var loginResult = true
+    var loginWithBiometric = true
 
     func login(username _: String, password _: String) async -> Bool {
         loginResult
+    }
+
+    func loginWithBiometric(username _: String) async -> Bool {
+        loginWithBiometric
     }
 }

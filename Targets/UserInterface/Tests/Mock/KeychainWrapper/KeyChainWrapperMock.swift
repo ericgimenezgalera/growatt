@@ -1,8 +1,8 @@
 //
-//  KeychainWrapperStub.swift
-//  APITests
+//  KeyChainWrapperMock.swift
+//  KeychainWrapperTests
 //
-//  Created by Eric Gimènez Galera on 26/9/23.
+//  Created by Eric Gimènez Galera on 3/10/23.
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
@@ -13,7 +13,7 @@ enum KeychainWrapperError: Error {
     case invalidValue
 }
 
-class KeychainWrapperStub: KeychainWrapper {
+class KeychainWrapperMock: KeychainWrapper {
     var values: [String: Data] = [:]
 
     func set(value: Data, account: String) throws {

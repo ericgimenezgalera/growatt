@@ -66,7 +66,8 @@ extension Project {
             "CFBundleShortVersionString": "1.0",
             "CFBundleVersion": "1",
             "UIMainStoryboardFile": "",
-            "UILaunchStoryboardName": "LaunchScreen"
+            "UILaunchStoryboardName": "LaunchScreen",
+            "NSFaceIDUsageDescription": "Use Face ID instead of a password to access your account."
             ]
 
         let mainTarget = Target(

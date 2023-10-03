@@ -110,6 +110,11 @@ public struct LoginView: View {
                 isLoading = false
                 showPassword = false
                 password = ""
+
+                viewModel.loginWithBiometric(
+                    username: username,
+                    navigationViewModel: navigationViewModel
+                )
             }
     }
 }
