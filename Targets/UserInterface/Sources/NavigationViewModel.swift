@@ -9,28 +9,10 @@
 import Foundation
 import SwiftUI
 
-public class NavigationViewModel: ObservableObject {
-    @MainActor @Published public var path = NavigationPath()
+public protocol NavigationViewModel {
+    func navigate(route: any Hashable) async
+}
 
-    public required init() {}
-
-    @MainActor public func cleanStackAndNavigate(route: any Hashable) async {
-        await MainActor.run {
-            path.removeLast(path.count)
-            path.append(route)
-            path.removeLast()
-        }
-    }
-
-    @MainActor public func navigate(route: any Hashable) async {
-        await MainActor.run {
-            path.append(route)
-        }
-    }
-
-    @MainActor public func pop() async {
-        await MainActor.run {
-            path.removeLast()
-        }
-    }
+class MockNavigationViewModel: NavigationViewModel {
+    func navigate(route _: any Hashable) async {}
 }

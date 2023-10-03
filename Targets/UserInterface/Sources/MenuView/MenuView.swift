@@ -10,9 +10,11 @@ import Foundation
 import SwiftUI
 
 public struct MenuView: View {
-    @EnvironmentObject var navigationViewModel: NavigationViewModel
+    var navigationViewModel: NavigationViewModel
 
-    public init() {}
+    public init(_ navigationViewModel: NavigationViewModel) {
+        self.navigationViewModel = navigationViewModel
+    }
 
     public var body: some View {
         TabView {
@@ -20,17 +22,16 @@ public struct MenuView: View {
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
-            SettingsView()
+            SettingsView(navigationViewModel)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
-                .environmentObject(navigationViewModel)
         }
     }
 }
 
 struct MenuView_Previews: PreviewProvider {
     static var previews: some View {
-        MenuView()
+        MenuView(MockNavigationViewModel())
     }
 }

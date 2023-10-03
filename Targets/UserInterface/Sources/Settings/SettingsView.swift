@@ -11,9 +11,11 @@ import SwiftUI
 
 public struct SettingsView: View {
     @AppStorage("username") var username: String = ""
-    @EnvironmentObject var navigationViewModel: NavigationViewModel
+    var navigationViewModel: NavigationViewModel
     @StateObject private var viewModel = SettingsViewModel()
-    public init() {}
+    public init(_ navigationViewModel: NavigationViewModel) {
+        self.navigationViewModel = navigationViewModel
+    }
 
     public var body: some View {
         NavigationView {
@@ -73,6 +75,6 @@ public struct SettingsView: View {
 
 struct Settings_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsView()
+        SettingsView(MockNavigationViewModel())
     }
 }

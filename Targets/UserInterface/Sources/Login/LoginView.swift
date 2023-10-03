@@ -5,14 +5,16 @@ public struct LoginView: View {
     @State var password: String = ""
     @State var showPassword: Bool = false
     @State private var isLoading = false
-    @EnvironmentObject var navigationViewModel: NavigationViewModel
+    var navigationViewModel: NavigationViewModel
     @StateObject private var viewModel = LoginViewModel()
 
     var isSignInButtonDisabled: Bool {
         [username, password].contains(where: \.isEmpty)
     }
 
-    public init() {}
+    public init(_ navigationViewModel: NavigationViewModel) {
+        self.navigationViewModel = navigationViewModel
+    }
 
     public var body: some View {
         VStack(alignment: .leading, spacing: 15) {
@@ -104,12 +106,16 @@ public struct LoginView: View {
                         ProgressView().tint(.white)
                     }.ignoresSafeArea()
                 }
-            })
+            }).onAppear {
+                isLoading = false
+                showPassword = false
+                password = ""
+            }
     }
 }
 
 struct Login_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(MockNavigationViewModel())
     }
 }

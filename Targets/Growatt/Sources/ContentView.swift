@@ -11,32 +11,34 @@ import SwiftUI
 import UserInterface
 
 struct ContentView: View {
-    @StateObject private var navigationModel: NavigationViewModel = .init()
+    @StateObject private var navigationModel: NavigationViewModelImpl = .init()
 
     public init() {}
 
     public var body: some View {
         NavigationStack(path: $navigationModel.path) {
             generateLoginView()
-        }.navigationDestination(for: LoginNavigationRoute.self) { routes in
-            switch routes {
-            case .onLogged:
-                generateMenuView()
-            }
-        }.navigationDestination(for: SettingsNavigationRoute.self) { routes in
-            switch routes {
-            case .onLogout:
-                generateLoginView()
-            }
+                .navigationDestination(for: LoginNavigationRoute.self) { routes in
+                    switch routes {
+                    case .onLogged:
+                        generateMenuView()
+                    }
+                }
+                .navigationDestination(for: SettingsNavigationRoute.self) { routes in
+                    switch routes {
+                    case .onLogout:
+                        fatalError("SettingsNavigationRoute.onLogout called to new view")
+                    }
+                }
         }
     }
 
     func generateLoginView() -> some View {
-        LoginView().environmentObject(navigationModel)
+        return LoginView(navigationModel)
     }
 
     func generateMenuView() -> some View {
-        MenuView().environmentObject(navigationModel)
+        MenuView(navigationModel).navigationBarBackButtonHidden()
     }
 }
 
