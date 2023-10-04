@@ -8,10 +8,10 @@
 
 import Foundation
 
-public struct AuthenticationResult: Codable, Equatable {
-    public let result: Int
+struct AuthenticationResult: Codable, Equatable {
+    let result: Int
 
-    public enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case result
     }
 }

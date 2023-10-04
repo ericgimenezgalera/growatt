@@ -27,7 +27,7 @@ final class AuthorizationServiceTests: BaseTests {
         // MARK: WHEN
 
         try await connectionManager
-            .authorise(authentication: Authentication(account: fakeUser, password: fakePassword))
+            .authorise(authentication: AuthenticationRequest(account: fakeUser, password: fakePassword))
     }
 
     func testInvalidUserOrPassword() async throws {
@@ -42,7 +42,7 @@ final class AuthorizationServiceTests: BaseTests {
 
         do {
             _ = try await connectionManager
-                .authorise(authentication: Authentication(account: fakeUser, password: fakePassword))
+                .authorise(authentication: AuthenticationRequest(account: fakeUser, password: fakePassword))
             XCTFail("Exception not thrown out")
         } catch {
             // MARK: THEN

@@ -21,19 +21,32 @@ public struct SettingsView: View {
         NavigationView {
             Form {
                 profileView()
-                /* Section(header: Text("CONTENT"), content: {
-                     HStack {
-                         Image(systemName: "heart")
-                         Text("Favorites")
-                     }
-
-                     HStack {
-                         Image(systemName: "arrow.down.to.line.circle")
-                         Text("Downloads")
-                     }
-
-                 }) */
+                if let plantDetails = viewModel.plantDetails {
+                    Section(header: Text("PLANT DETAILS"), content: {
+                        HStack {
+                            LabeledContent("Name", value: plantDetails.name)
+                        }
+                        HStack {
+                            LabeledContent("Power", value: "\(plantDetails.power) W")
+                        }
+                        HStack {
+                            LabeledContent("Device Model", value: plantDetails.deviceModel)
+                        }
+                        HStack {
+                            LabeledContent("Datalog type", value: plantDetails.datalogType)
+                        }
+                        HStack {
+                            LabeledContent("SN", value: plantDetails.serialNumber)
+                        }
+                    })
+                } else {
+                    Section(header: Text("PLANT DETAILS"), content: {
+                        ProgressView().frame(alignment: .center)
+                    })
+                }
             }
+        }.onAppear {
+            viewModel.getPlantData()
         }
     }
 

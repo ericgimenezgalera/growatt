@@ -1,5 +1,5 @@
 //
-//  AuthorizationServiceMock.swift
+//  PlantServiceMock.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 14/9/23.
@@ -9,14 +9,15 @@
 import API
 import Foundation
 
-public class AuthorizationServiceMock: AuthorizationService {
+public class PlantServiceMock: PlantService {
     public var success: Bool = true
-    public var authentication: AuthenticationRequest?
+    public var plantDetailsResult: PlantDetails = .makeStub()
 
-    public func authorise(authentication: AuthenticationRequest) async throws {
-        self.authentication = authentication
+    public func plantList() async throws -> PlantDetails {
         guard success else {
             throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
         }
+
+        return plantDetailsResult
     }
 }

@@ -23,7 +23,7 @@ class LoginModelImpl: LoginModel {
     var context = LAContext()
 
     func login(username: String, password: String) async -> Bool {
-        let authentication = Authentication(account: username, password: password)
+        let authentication = AuthenticationRequest(account: username, password: password)
         do {
             try await authorizationService.authorise(authentication: authentication)
             return true

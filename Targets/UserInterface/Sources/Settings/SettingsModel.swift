@@ -12,12 +12,22 @@ import Foundation
 
 protocol SettingsModel {
     func logout()
+    func getPlantData() async -> PlantDetails?
 }
 
 class SettingsModelImpl: SettingsModel {
     @Injected(\.sessionManager) var sessionManager: SessionManager
+    @Injected(\.plantService) var plantService: PlantService
 
     func logout() {
         sessionManager.logout()
+    }
+
+    func getPlantData() async -> PlantDetails? {
+        do {
+            return try await plantService.plantList()
+        } catch {
+            return nil
+        }
     }
 }

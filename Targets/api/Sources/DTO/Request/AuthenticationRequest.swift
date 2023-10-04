@@ -1,5 +1,5 @@
 //
-//  Authentication.swift
+//  AuthenticationRequest.swift
 //  api
 //
 //  Created by Eric Gimenez on 14/6/22.
@@ -9,7 +9,7 @@
 import CryptoKit
 import Foundation
 
-public struct Authentication: Codable, Equatable {
+public struct AuthenticationRequest: Codable, Equatable {
     public let account: String
     public let password: String
 

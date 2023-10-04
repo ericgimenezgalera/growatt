@@ -28,7 +28,10 @@ final class LoginModelTests: XCTestCase {
         let loginResult = await loginModel.login(username: username, password: password)
 
         XCTAssertTrue(loginResult)
-        XCTAssertEqual(authorizationServiceMock.authentication, Authentication(account: username, password: password))
+        XCTAssertEqual(
+            authorizationServiceMock.authentication,
+            AuthenticationRequest(account: username, password: password)
+        )
     }
 
     func testLoginDenied() async {
@@ -46,7 +49,10 @@ final class LoginModelTests: XCTestCase {
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertTrue(loginResult)
-        XCTAssertEqual(authorizationServiceMock.authentication, Authentication(account: username, password: password))
+        XCTAssertEqual(
+            authorizationServiceMock.authentication,
+            AuthenticationRequest(account: username, password: password)
+        )
     }
 
     func testBiometricFailsReasonNoStoredPassword() async {

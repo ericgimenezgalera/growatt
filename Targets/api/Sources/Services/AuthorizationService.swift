@@ -9,11 +9,11 @@
 import Foundation
 
 public protocol AuthorizationService {
-    func authorise(authentication: Authentication) async throws
+    func authorise(authentication: AuthenticationRequest) async throws
 }
 
 extension ConnectionManager: AuthorizationService {
-    public func authorise(authentication: Authentication) async throws {
+    public func authorise(authentication: AuthenticationRequest) async throws {
         // 401 if not authenticate
         let authenticationResult = try await ConnectionManager.Builder(self)
             .addUrlSubPath(path: "login")

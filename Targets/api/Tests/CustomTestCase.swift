@@ -20,6 +20,30 @@ class BaseTests: XCTestCase {
         connectionManager = .init(baseURL: BaseTests.baseUrl)
     }
 
+    func addPlantIdCookie() {
+        let cookie = HTTPCookie(properties: [
+            .domain: "aaa.bbbb.ccc",
+            .path: "/",
+            .name: "onePlantId",
+            .value: "123456789",
+            .version: 1,
+            .secure: true,
+            .expires: NSDate(timeIntervalSinceNow: 12345),
+            .init(rawValue: "HttpOnly"): true,
+        ])!
+        HTTPCookieStorage.shared.setCookie(cookie)
+    }
+
+    func cleanAllCookies() {
+        guard let cookies = HTTPCookieStorage.shared.cookies else {
+            return
+        }
+
+        for cookie in cookies {
+            HTTPCookieStorage.shared.deleteCookie(cookie)
+        }
+    }
+
     func stubResponse(
         subpath: String,
         ignoreQuery: Bool = true,
@@ -42,5 +66,26 @@ class BaseTests: XCTestCase {
             requestError: requestError
         )
         mock.register()
+    }
+
+    func assertThrowsAsyncError<T>(
+        _ expression: @autoclosure () async throws -> T,
+        _ message: @autoclosure () -> String = "",
+        file: StaticString = #filePath,
+        line: UInt = #line,
+        _ errorHandler: (_ error: Error) -> Void = { _ in }
+    ) async {
+        do {
+            _ = try await expression()
+            // expected error to be thrown, but it was not
+            let customMessage = message()
+            if customMessage.isEmpty {
+                XCTFail("Asynchronous call did not throw an error.", file: file, line: line)
+            } else {
+                XCTFail(customMessage, file: file, line: line)
+            }
+        } catch {
+            errorHandler(error)
+        }
     }
 }
