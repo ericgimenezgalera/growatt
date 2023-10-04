@@ -107,7 +107,7 @@ public struct LoginView: View {
                     }.ignoresSafeArea()
                 }
             }).onAppear {
-                isLoading = false
+                isLoading = true
                 showPassword = false
                 password = ""
 
