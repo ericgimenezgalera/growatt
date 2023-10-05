@@ -35,7 +35,7 @@ public struct SettingsView: View {
                             LabeledContent("Device Model", value: plantDetails.inverterModel)
                         }
                         HStack {
-                            LabeledContent("Serial Number", value: plantDetails.serialNumber)
+                            LabeledContent("Serial Number", value: plantDetails.inverterSerialNumber)
                         }
                     })
                     Section(header: Text("DATALOG DETAILS"), content: {

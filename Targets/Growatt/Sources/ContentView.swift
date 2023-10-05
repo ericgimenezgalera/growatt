@@ -7,10 +7,10 @@
 //
 
 import API
-import SwiftUI
-import UserInterface
 import DependencyInjection
 import KeychainWrapper
+import SwiftUI
+import UserInterface
 
 struct ContentView: View {
     @AppStorage("appVersion") var appVersion: String = ""

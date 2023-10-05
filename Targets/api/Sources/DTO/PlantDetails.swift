@@ -15,7 +15,7 @@ public struct PlantDetails: Codable, Equatable {
     public let datalogType: String
     public let datalogSerialNumber: String
     public let inverterModel: String
-    public let serialNumber: String
+    public let inverterSerialNumber: String
 
     public enum CodingKeys: String, CodingKey {
         case name = "plantName"
@@ -23,7 +23,7 @@ public struct PlantDetails: Codable, Equatable {
         case datalogType = "datalogTypeTest"
         case datalogSerialNumber = "datalogSn"
         case inverterModel = "deviceModel"
-        case serialNumber = "sn"
+        case inverterSerialNumber = "sn"
     }
 
     public init(
@@ -32,14 +32,14 @@ public struct PlantDetails: Codable, Equatable {
         datalogType: String,
         datalogSerialNumber: String,
         inverterModel: String,
-        serialNumber: String
+        inverterSerialNumber: String
     ) {
         self.name = name
         self.power = power
         self.datalogType = datalogType
         self.datalogSerialNumber = datalogSerialNumber
         self.inverterModel = inverterModel
-        self.serialNumber = serialNumber
+        self.inverterSerialNumber = inverterSerialNumber
     }
 
     public init(from decoder: Decoder) throws {
@@ -50,7 +50,7 @@ public struct PlantDetails: Codable, Equatable {
         datalogType = try container.decode(String.self, forKey: .datalogType)
         datalogSerialNumber = try container.decode(String.self, forKey: .datalogSerialNumber)
         inverterModel = try container.decode(String.self, forKey: .inverterModel)
-        serialNumber = try container.decode(String.self, forKey: .serialNumber)
+        inverterSerialNumber = try container.decode(String.self, forKey: .inverterSerialNumber)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -60,6 +60,6 @@ public struct PlantDetails: Codable, Equatable {
         try container.encode(datalogType, forKey: .datalogType)
         try container.encode(datalogSerialNumber, forKey: .datalogSerialNumber)
         try container.encode(inverterModel, forKey: .inverterModel)
-        try container.encode(serialNumber, forKey: .serialNumber)
+        try container.encode(inverterSerialNumber, forKey: .inverterSerialNumber)
     }
 }

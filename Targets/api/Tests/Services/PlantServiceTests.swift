@@ -96,6 +96,7 @@ final class PlantServiceTests: BaseTests {
 
     func testListFailedNoPlantDetails() async throws {
         // MARK: Given
+
         let expectedData = PlantListResponse(result: 1, obj: PlantListResponseDetails(datas: []))
 
         let mockedData = try JSONEncoder().encode(expectedData)

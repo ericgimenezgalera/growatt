@@ -17,7 +17,7 @@ extension PlantDetails {
             datalogType: "Fake type",
             datalogSerialNumber: "Fake datalog serial number",
             inverterModel: "Fake inverter Model",
-            serialNumber: "Fake inverter serial number"
+            inverterSerialNumber: "Fake inverter serial number"
         )
     }
 }

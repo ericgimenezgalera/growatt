@@ -14,7 +14,6 @@ public enum KeychainWrapperError: Error {
 }
 
 public class KeychainWrapperMock: KeychainWrapper {
-
     public var values: [String: Data] = [:]
 
     public func exists(account: String) throws -> Bool {
