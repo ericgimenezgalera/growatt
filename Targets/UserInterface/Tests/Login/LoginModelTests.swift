@@ -32,6 +32,10 @@ final class LoginModelTests: XCTestCase {
             authorizationServiceMock.authentication,
             AuthenticationRequest(account: username, password: password)
         )
+        XCTAssertEqual(
+            try? keychainWrapperMock.get(account: passwordKeychainAccount),
+            password
+        )
     }
 
     func testLoginDenied() async {

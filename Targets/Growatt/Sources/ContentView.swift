@@ -9,11 +9,26 @@
 import API
 import SwiftUI
 import UserInterface
+import DependencyInjection
+import KeychainWrapper
 
 struct ContentView: View {
+    @AppStorage("appVersion") var appVersion: String = ""
     @StateObject private var navigationModel: NavigationViewModelImpl = .init()
+    @Injected(\.keychainWrapper) var keychainWrapper: KeychainWrapper
 
-    public init() {}
+    public init() {
+        // If fresh install clean keychain
+        guard !appVersion.isEmpty else {
+            do {
+                if try keychainWrapper.exists(account: passwordKeychainAccount) {
+                    try keychainWrapper.delete(account: passwordKeychainAccount)
+                }
+                appVersion = currentAppVersion
+            } catch {}
+            return
+        }
+    }
 
     public var body: some View {
         NavigationStack(path: $navigationModel.path) {

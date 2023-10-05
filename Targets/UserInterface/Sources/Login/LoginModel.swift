@@ -26,6 +26,7 @@ class LoginModelImpl: LoginModel {
         let authentication = AuthenticationRequest(account: username, password: password)
         do {
             try await authorizationService.authorise(authentication: authentication)
+            try keychainWrapper.set(value: password, account: passwordKeychainAccount)
             return true
         } catch {
             return false

@@ -15,8 +15,9 @@ extension PlantDetails {
             name: "Fake name",
             power: 9999,
             datalogType: "Fake type",
-            deviceModel: "Fake deviceModel",
-            serialNumber: "Fake serial number"
+            datalogSerialNumber: "Fake datalog serial number",
+            inverterModel: "Fake inverter Model",
+            serialNumber: "Fake inverter serial number"
         )
     }
 }

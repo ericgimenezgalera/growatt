@@ -29,14 +29,21 @@ public struct SettingsView: View {
                         HStack {
                             LabeledContent("Power", value: "\(plantDetails.power) W")
                         }
+                    })
+                    Section(header: Text("INVERTER DETAILS"), content: {
                         HStack {
-                            LabeledContent("Device Model", value: plantDetails.deviceModel)
+                            LabeledContent("Device Model", value: plantDetails.inverterModel)
                         }
                         HStack {
-                            LabeledContent("Datalog type", value: plantDetails.datalogType)
+                            LabeledContent("Serial Number", value: plantDetails.serialNumber)
+                        }
+                    })
+                    Section(header: Text("DATALOG DETAILS"), content: {
+                        HStack {
+                            LabeledContent("Device model", value: plantDetails.datalogType)
                         }
                         HStack {
-                            LabeledContent("SN", value: plantDetails.serialNumber)
+                            LabeledContent("Serial Number", value: plantDetails.datalogSerialNumber)
                         }
                     })
                 } else {
@@ -60,9 +67,6 @@ public struct SettingsView: View {
                         .frame(width: 100, height: 100, alignment: .center)
                     Text(username)
                         .font(.title)
-                    Text("Growatt username")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
                     Spacer()
                     Button(action: {
                         viewModel.logout(navigationViewModel: navigationViewModel)

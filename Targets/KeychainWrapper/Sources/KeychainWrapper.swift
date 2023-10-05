@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol KeychainWrapper {
+    func exists(account: String) throws -> Bool
     func set(value: Data, account: String) throws
     func set(value: String, account: String) throws
     func set(value: Int, account: String) throws

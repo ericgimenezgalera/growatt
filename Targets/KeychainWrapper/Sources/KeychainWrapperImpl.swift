@@ -10,8 +10,12 @@ import Foundation
 public class KeychainWraperImpl: KeychainWrapper {
     public init() {}
 
+    public func exists(account: String) throws -> Bool {
+        try KeychainOperations.exists(account: account)
+    }
+
     public func set(value: Data, account: String) throws {
-        if try KeychainOperations.exists(account: account) {
+        if try exists(account: account) {
             try KeychainOperations.update(value: value, account: account)
         } else {
             try KeychainOperations.add(value: value, account: account)

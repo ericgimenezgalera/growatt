@@ -4,7 +4,6 @@ public struct LoginView: View {
     @AppStorage("username") var username: String = ""
     @State var password: String = ""
     @State var showPassword: Bool = false
-    @State private var isLoading = false
     var navigationViewModel: NavigationViewModel
     @StateObject private var viewModel = LoginViewModel()
 
@@ -66,7 +65,7 @@ public struct LoginView: View {
             Spacer()
 
             Button {
-                isLoading = true
+                viewModel.isLoading = true
                 viewModel.login(
                     username: username,
                     password: password,
@@ -95,19 +94,19 @@ public struct LoginView: View {
             get: { viewModel.error != nil },
             set: { _ in
                 viewModel.error = nil
-                isLoading = false
+                viewModel.isLoading = false
             }
         ), error: viewModel.error) {}
-            .disabled(isLoading)
+            .disabled(viewModel.isLoading)
             .overlay(Group {
-                if isLoading {
+                if viewModel.isLoading {
                     ZStack {
                         Color(white: 0, opacity: 0.75)
                         ProgressView().tint(.white)
                     }.ignoresSafeArea()
                 }
             }).onAppear {
-                isLoading = true
+                viewModel.isLoading = true
                 showPassword = false
                 password = ""
 
