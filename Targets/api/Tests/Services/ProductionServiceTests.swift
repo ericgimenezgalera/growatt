@@ -17,6 +17,8 @@ final class ProductionServiceTests: BaseTests {
 
     override func setUp() {
         super.setUp()
+        cleanAllCookies()
+        PlantIdManager.plantId = ""
         addPlantIdCookie()
     }
 
@@ -53,7 +55,7 @@ final class ProductionServiceTests: BaseTests {
             await connectionManager
                 .currentProduction(datalogSerialNumber: datalogSerialNumber)
         ) { error in
-            XCTAssertEqual(error as? ProductionServiceError, ProductionServiceError.noPlantId)
+            XCTAssertEqual(error as? PlantIdManagerError, PlantIdManagerError.noPlantIdInCookies)
         }
     }
 

@@ -14,15 +14,7 @@ struct PlantListRequest: Codable, Equatable {
     public let plantId: String
 
     init() throws {
-        let cookies = HTTPCookieStorage.shared.cookies?.filter { cookie in
-            cookie.name == "onePlantId"
-        }
-
-        guard cookies?.count == 1, let plantId = cookies?.first?.value else {
-            throw PlantServiceError.noPlantId
-        }
-
-        self.plantId = plantId
+        plantId = try PlantIdManager.obtain()
     }
 
     enum CodingKeys: String, CodingKey {

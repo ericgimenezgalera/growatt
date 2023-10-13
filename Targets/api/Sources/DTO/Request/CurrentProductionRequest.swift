@@ -10,20 +10,12 @@ import CryptoKit
 import Foundation
 
 struct CurrentProductionRequest: Codable, Equatable {
-    public let plantId: String
-    public let datalogSerialNumber: String
-    public let address: String = "1"
+    let plantId: String
+    let datalogSerialNumber: String
+    let address: String = "1"
 
     init(datalogSerialNumber: String) throws {
-        let cookies = HTTPCookieStorage.shared.cookies?.filter { cookie in
-            cookie.name == "onePlantId"
-        }
-
-        guard cookies?.count == 1, let plantId = cookies?.first?.value else {
-            throw ProductionServiceError.noPlantId
-        }
-
-        self.plantId = plantId
+        plantId = try PlantIdManager.obtain()
         self.datalogSerialNumber = datalogSerialNumber
     }
 

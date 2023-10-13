@@ -16,6 +16,8 @@ final class PlantServiceTests: BaseTests {
 
     override func setUp() {
         super.setUp()
+        cleanAllCookies()
+        PlantIdManager.plantId = ""
         addPlantIdCookie()
     }
 
@@ -49,7 +51,7 @@ final class PlantServiceTests: BaseTests {
         // MARK: WHEN
 
         try await assertThrowsAsyncError(await connectionManager.plantList()) { error in
-            XCTAssertEqual(error as? PlantServiceError, PlantServiceError.noPlantId)
+            XCTAssertEqual(error as? PlantIdManagerError, PlantIdManagerError.noPlantIdInCookies)
         }
     }
 

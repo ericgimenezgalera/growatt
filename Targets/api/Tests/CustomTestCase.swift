@@ -43,6 +43,12 @@ class BaseTests: XCTestCase {
             HTTPCookieStorage.shared.deleteCookie(cookie)
         }
     }
+    
+    func cleanUserDefaults() {
+        let domain = Bundle.main.bundleIdentifier!
+        UserDefaults.standard.removePersistentDomain(forName: domain)
+        UserDefaults.standard.synchronize()
+    }
 
     func stubResponse(
         subpath: String,
