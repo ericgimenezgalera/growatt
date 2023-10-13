@@ -15,6 +15,7 @@ public enum ProductionServiceError: Error, Equatable {
 
 public protocol ProductionService {
     func currentProduction(datalogSerialNumber: String) async throws -> Production
+    func dailyProduction(datalogSerialNumber: String, inverterSerialNumber: String) async throws -> DailyProduction
 }
 
 extension ConnectionManager: ProductionService {
@@ -33,5 +34,28 @@ extension ConnectionManager: ProductionService {
         }
 
         return currentProductionResponse.obj
+    }
+
+    public func dailyProduction(
+        datalogSerialNumber: String,
+        inverterSerialNumber: String
+    ) async throws -> DailyProduction {
+        let dailyProductionRequest = try DailyProductionRequest(
+            datalogSerialNumber: datalogSerialNumber,
+            inverterSerialNumber: inverterSerialNumber
+        )
+
+        let dailyProductionResponse: DailyProductionResponse = try await ConnectionManager.Builder(self)
+            .addUrlSubPath(path: "panel/singleBackflow/getSingleBackflowTotalData")
+            .httpMethod(.post)
+            .encodeParameterInURL(parameter: dailyProductionRequest, includeBody: false)
+            .validStatusCode(200)
+            .doRequest()
+
+        guard dailyProductionResponse.result == 1 else {
+            throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
+        }
+
+        return dailyProductionResponse.obj
     }
 }
