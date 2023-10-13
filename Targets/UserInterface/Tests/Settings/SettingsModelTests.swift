@@ -30,7 +30,7 @@ final class SettingsModelTests: XCTestCase {
     }
 
     func testGetPlantDetailsFailed() async {
-        plantServiceMock.success = false
+        plantServiceMock.plantListSuccess = false
 
         let plantDetails = await model.getPlantData()
         XCTAssertNil(plantDetails)
