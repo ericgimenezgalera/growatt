@@ -16,6 +16,7 @@ public enum PlantServiceError: Error {
 
 public protocol PlantService {
     func plantList() async throws -> PlantDetails
+    func socialContribution() async throws -> SocialContribution
 }
 
 extension ConnectionManager: PlantService {
@@ -40,5 +41,21 @@ extension ConnectionManager: PlantService {
         }
 
         return details
+    }
+
+    public func socialContribution() async throws -> SocialContribution {
+        let socialContributionRequest = try SocialContributionRequest()
+        let socialContributionResponse: SocialContributionResponse = try await ConnectionManager.Builder(self)
+            .addUrlSubPath(path: "panel/getPlantData")
+            .httpMethod(.post)
+            .encodeParameterInURL(parameter: socialContributionRequest, includeBody: false)
+            .validStatusCode(200)
+            .doRequest()
+
+        guard socialContributionResponse.result == 1 else {
+            throw ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
+        }
+
+        return socialContributionResponse.obj
     }
 }

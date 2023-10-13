@@ -12,7 +12,8 @@ import Mocker
 import XCTest
 
 final class PlantServiceTests: BaseTests {
-    private let plantServicePath = "panel/getDevicesByPlantList"
+    private let plantListPath = "panel/getDevicesByPlantList"
+    private let socialContributionPath = "panel/getPlantData"
 
     override func setUp() {
         super.setUp()
@@ -28,7 +29,7 @@ final class PlantServiceTests: BaseTests {
         let expectedData = PlantListResponse(result: 1, obj: PlantListResponseDetails(datas: [expectedPlantDetails]))
 
         let mockedData = try JSONEncoder().encode(expectedData)
-        stubResponse(subpath: plantServicePath, statusCode: 200, data: [.post: mockedData])
+        stubResponse(subpath: plantListPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
@@ -46,7 +47,7 @@ final class PlantServiceTests: BaseTests {
         let expectedData = PlantListResponse(result: 1, obj: PlantListResponseDetails(datas: [expectedPlantDetails]))
 
         let mockedData = try JSONEncoder().encode(expectedData)
-        stubResponse(subpath: plantServicePath, statusCode: 200, data: [.post: mockedData])
+        stubResponse(subpath: plantListPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
@@ -65,7 +66,7 @@ final class PlantServiceTests: BaseTests {
         )
 
         let mockedData = try JSONEncoder().encode(expectedData)
-        stubResponse(subpath: plantServicePath, statusCode: 200, data: [.post: mockedData])
+        stubResponse(subpath: plantListPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
@@ -84,7 +85,7 @@ final class PlantServiceTests: BaseTests {
         )
 
         let mockedData = try JSONEncoder().encode(expectedData)
-        stubResponse(subpath: plantServicePath, statusCode: 200, data: [.post: mockedData])
+        stubResponse(subpath: plantListPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
@@ -102,12 +103,65 @@ final class PlantServiceTests: BaseTests {
         let expectedData = PlantListResponse(result: 1, obj: PlantListResponseDetails(datas: []))
 
         let mockedData = try JSONEncoder().encode(expectedData)
-        stubResponse(subpath: plantServicePath, statusCode: 200, data: [.post: mockedData])
+        stubResponse(subpath: plantListPath, statusCode: 200, data: [.post: mockedData])
 
         // MARK: WHEN
 
         try await assertThrowsAsyncError(await connectionManager.plantList()) { error in
             XCTAssertEqual(error as? PlantServiceError, PlantServiceError.noPlanDetails)
+        }
+    }
+
+    func testSocialContributionSuccess() async throws {
+        // MARK: Given
+
+        let expectedSocialContribution = SocialContribution.makeStub()
+        let expectedData = SocialContributionResponse(result: 1, obj: expectedSocialContribution)
+
+        let mockedData = try JSONEncoder().encode(expectedData)
+        stubResponse(subpath: socialContributionPath, statusCode: 200, data: [.post: mockedData])
+
+        // MARK: WHEN
+
+        let socialContribution = try await connectionManager.socialContribution()
+
+        XCTAssertEqual(socialContribution, expectedSocialContribution)
+    }
+
+    func testSocialContributionFailedReasonNoPlantId() async throws {
+        cleanAllCookies()
+
+        // MARK: Given
+
+        let expectedSocialContribution = SocialContribution.makeStub()
+        let expectedData = SocialContributionResponse(result: 1, obj: expectedSocialContribution)
+
+        let mockedData = try JSONEncoder().encode(expectedData)
+        stubResponse(subpath: socialContributionPath, statusCode: 200, data: [.post: mockedData])
+
+        // MARK: WHEN
+
+        try await assertThrowsAsyncError(await connectionManager.socialContribution()) { error in
+            XCTAssertEqual(error as? PlantIdManagerError, PlantIdManagerError.noPlantIdInCookies)
+        }
+    }
+
+    func testSocialContributionFailedInavildResult() async throws {
+        // MARK: Given
+
+        let expectedSocialContribution = SocialContribution.makeStub()
+        let expectedData = SocialContributionResponse(result: -1, obj: expectedSocialContribution)
+
+        let mockedData = try JSONEncoder().encode(expectedData)
+        stubResponse(subpath: socialContributionPath, statusCode: 200, data: [.post: mockedData])
+
+        // MARK: WHEN
+
+        try await assertThrowsAsyncError(await connectionManager.socialContribution()) { error in
+            XCTAssertEqual(
+                error as? ConnectionManagerError,
+                ConnectionManagerError.invalidStatusCode(expectedStatusCodes: [200], receivedStatusCode: 401)
+            )
         }
     }
 }
