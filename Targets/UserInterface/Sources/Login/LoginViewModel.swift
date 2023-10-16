@@ -34,6 +34,11 @@ class LoginViewModel: ViewModel {
 
     func login(username: String, password: String, navigationViewModel: NavigationViewModel) {
         let task = Task.detached(priority: .background) { [weak self] in
+            defer {
+                DispatchQueue.main.sync { [weak self] in
+                    self?.isLoading = false
+                }
+            }
             guard let loginModel = self?.loginModel else {
                 return
             }

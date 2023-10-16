@@ -13,6 +13,7 @@ let keyChainWrapperName = "KeychainWrapper"
 let alamofireName = "Alamofire"
 let mockerName = "Mocker"
 let multiProgressView = "MultiProgressView"
+let viewInspector = "ViewInspector"
 
 let api = Project.makeFrameworkTargets(
     name: apiName,
@@ -35,7 +36,9 @@ let uiFramework = Project.makeFrameworkTargets(
         .target(name: diName),
         .external(name: multiProgressView)
     ],
-    testDependencies: []
+    testDependencies: [
+        .external(name: viewInspector)
+    ]
 )
 
 

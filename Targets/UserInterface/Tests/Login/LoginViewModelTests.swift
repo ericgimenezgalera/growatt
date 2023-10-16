@@ -4,15 +4,14 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-final class LoginViewModelTests: XCTestCase {
+final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
     let username = "fakeUsername"
     let password = "fakePassword"
-    var loginViewModel: LoginViewModel!
     var loginModelMock: LoginModelMock!
     var navigationViewModelMock: NavigationViewModelMock!
 
     override func setUp() {
-        loginViewModel = LoginViewModel()
+        viewModel = LoginViewModel()
         loginModelMock = LoginModelMock()
         navigationViewModelMock = NavigationViewModelMock()
         InjectedValues[\.loginModel] = loginModelMock
@@ -23,44 +22,39 @@ final class LoginViewModelTests: XCTestCase {
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        loginViewModel.login(
-            username: username,
-            password: password,
-            navigationViewModel: navigationViewModelMock
-        )
+        waitForFinishedTask {
+            self.viewModel.isLoading = true
+            self.viewModel.login(
+                username: self.username,
+                password: self.password,
+                navigationViewModel: self.navigationViewModelMock
+            )
+        }
 
         wait(for: [navigateExpectation])
         XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
+        XCTAssertFalse(viewModel.isLoading)
     }
 
-    func testLoginDenied() {
+    @MainActor func testLoginDenied() {
         loginModelMock.loginResult = false
 
-        let errorExpectation = expectation(description: "Navigation Error")
-        let completaionExpectation = expectation(description: "Completion task")
-
-        Task {
-            loginViewModel.login(
-                username: username,
-                password: password,
-                navigationViewModel: navigationViewModelMock
+        waitForFinishedTask {
+            self.viewModel.isLoading = true
+            self.viewModel.login(
+                username: self.username,
+                password: self.password,
+                navigationViewModel: self.navigationViewModelMock
             )
-
-            switch await loginViewModel.tasks.first?.result {
-            case .success:
-                _ = await loginViewModel.error.publisher.sink { _ in
-                    completaionExpectation.fulfill()
-                } receiveValue: { error in
-                    if case LoginViewModelError.invalidPassword = error {
-                        errorExpectation.fulfill()
-                    }
-                }
-            default:
-                XCTFail("Not success task")
-            }
+        }
+        switch viewModel.error {
+        case .invalidPassword:
+            break
+        default:
+            XCTFail("Invalid error type")
         }
 
-        wait(for: [errorExpectation, completaionExpectation])
+        XCTAssertFalse(viewModel.isLoading)
     }
 
     func testLoginWithBiometricSuccess() {
@@ -68,36 +62,34 @@ final class LoginViewModelTests: XCTestCase {
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        loginViewModel.loginWithBiometric(
-            username: username,
-            navigationViewModel: navigationViewModelMock
-        )
+        waitForFinishedTask {
+            self.viewModel.isLoading = true
+            self.viewModel.loginWithBiometric(
+                username: self.username,
+                navigationViewModel: self.navigationViewModelMock
+            )
+        }
 
         wait(for: [navigateExpectation])
         XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
+        XCTAssertFalse(viewModel.isLoading)
     }
 
     func testLoginWithBiometricDenied() {
         loginModelMock.loginWithBiometric = false
+        let navigateExpectation = expectation(description: "Navigation called")
+        navigateExpectation.isInverted = true
+        navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        let completaionExpectation = expectation(description: "Completion task")
-
-        Task {
-            loginViewModel.loginWithBiometric(
-                username: username,
-                navigationViewModel: navigationViewModelMock
+        waitForFinishedTask {
+            self.viewModel.isLoading = true
+            self.viewModel.loginWithBiometric(
+                username: self.username,
+                navigationViewModel: self.navigationViewModelMock
             )
-
-            switch await loginViewModel.tasks.first?.result {
-            case .success:
-                _ = await loginViewModel.error.publisher.sink { _ in
-                    completaionExpectation.fulfill()
-                } receiveValue: { _ in }
-            default:
-                XCTFail("Not success task")
-            }
         }
 
-        wait(for: [completaionExpectation])
+        wait(for: [navigateExpectation], timeout: 0.1)
+        XCTAssertFalse(viewModel.isLoading)
     }
 }

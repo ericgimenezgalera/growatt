@@ -9,3 +9,4 @@
 import Foundation
 
 public let passwordKeychainAccount = "Password"
+public let usernameUserDefaultsKey = "username"

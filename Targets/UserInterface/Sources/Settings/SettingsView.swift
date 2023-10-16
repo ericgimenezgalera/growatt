@@ -10,7 +10,7 @@ import Foundation
 import SwiftUI
 
 public struct SettingsView: View {
-    @AppStorage("username") var username: String = ""
+    @AppStorage(usernameUserDefaultsKey) var username: String = ""
     var navigationViewModel: NavigationViewModel
     @StateObject private var viewModel = SettingsViewModel()
     public init(_ navigationViewModel: NavigationViewModel) {

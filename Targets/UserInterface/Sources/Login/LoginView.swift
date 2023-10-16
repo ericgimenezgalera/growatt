@@ -1,18 +1,25 @@
+import DependencyInjection
 import SwiftUI
 
-public struct LoginView: View {
-    @AppStorage("username") var username: String = ""
+public struct LoginView: BaseView {
+    @AppStorage(usernameUserDefaultsKey) var username: String = ""
     @State var password: String = ""
     @State var showPassword: Bool = false
+    @StateObject var viewModel: LoginViewModel
+    var didAppear: ((Self) -> Void)?
     var navigationViewModel: NavigationViewModel
-    @StateObject private var viewModel = LoginViewModel()
 
     var isSignInButtonDisabled: Bool {
         [username, password].contains(where: \.isEmpty)
     }
 
     public init(_ navigationViewModel: NavigationViewModel) {
+        self.init(navigationViewModel, viewModel: LoginViewModel())
+    }
+
+    init(_ navigationViewModel: NavigationViewModel, viewModel: LoginViewModel) {
         self.navigationViewModel = navigationViewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     public var body: some View {
@@ -24,6 +31,7 @@ public struct LoginView: View {
                 text: $username,
                 prompt: Text("Login").foregroundColor(.blue)
             )
+            .id(usernameTextFieldId)
             .padding(10)
             .overlay {
                 RoundedRectangle(cornerRadius: 10)
@@ -39,6 +47,7 @@ public struct LoginView: View {
                             prompt: Text("Password")
                                 .foregroundColor(.blue)
                         )
+                        .id(passwordTextFieldId)
                     } else {
                         SecureField(
                             "Password",
@@ -46,6 +55,7 @@ public struct LoginView: View {
                             prompt: Text("Password")
                                 .foregroundColor(.blue)
                         )
+                        .id(passwordSecureFieldId)
                     }
                 }
                 .padding(10)
@@ -60,8 +70,10 @@ public struct LoginView: View {
                     Image(systemName: showPassword ? "eye.slash" : "eye")
                         .foregroundColor(.blue)
                 }
+                .id(eyeButtonId)
+            }
+            .padding(.horizontal)
 
-            }.padding(.horizontal)
             Spacer()
 
             Button {
@@ -77,6 +89,7 @@ public struct LoginView: View {
                     .bold()
                     .foregroundColor(.white)
             }
+            .id(signinButtonId)
             .frame(height: 50)
             .frame(maxWidth: .infinity) // how to make a button fill all the space available horizontaly
             .background(
@@ -90,31 +103,40 @@ public struct LoginView: View {
             .cornerRadius(20)
             .disabled(isSignInButtonDisabled)
             .padding()
-        }.alert(isPresented: Binding<Bool>(
-            get: { viewModel.error != nil },
-            set: { _ in
-                viewModel.error = nil
-                viewModel.isLoading = false
-            }
-        ), error: viewModel.error) {}
-            .disabled(viewModel.isLoading)
-            .overlay(Group {
-                if viewModel.isLoading {
-                    ZStack {
-                        Color(white: 0, opacity: 0.75)
-                        ProgressView().tint(.white)
-                    }.ignoresSafeArea()
+        }
+        .alert(
+            isPresented: Binding<Bool>(
+                get: { viewModel.error != nil },
+                set: { _ in
+                    viewModel.error = nil
+                    viewModel.isLoading = false
                 }
-            }).onAppear {
-                viewModel.isLoading = true
-                showPassword = false
-                password = ""
-
-                viewModel.loginWithBiometric(
-                    username: username,
-                    navigationViewModel: navigationViewModel
-                )
+            ),
+            error: viewModel.error,
+            actions: {}
+        )
+        .disabled(viewModel.isLoading)
+        .overlay(Group {
+            if viewModel.isLoading {
+                ZStack {
+                    Color(white: 0, opacity: 0.75)
+                    ProgressView().tint(.white)
+                }
+                .ignoresSafeArea()
+                .id(spinnerViewId)
             }
+        })
+        .onAppear {
+            viewModel.isLoading = true
+            showPassword = false
+            password = ""
+
+            viewModel.loginWithBiometric(
+                username: username,
+                navigationViewModel: navigationViewModel
+            )
+            self.didAppear?(self)
+        }
     }
 }
 
