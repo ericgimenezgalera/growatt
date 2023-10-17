@@ -17,8 +17,8 @@ class HomeViewModel: ViewModel {
     @Published var socialContribution: SocialContribution?
 
     func loadProductionData(
-        homeEnergyProgressVar: any SwiftUiMultiProgressView,
-        solarProductionProgressVar: any SwiftUiMultiProgressView
+        homeEnergyProgressBar: any SwiftUiMultiProgressView,
+        solarProductionProgressBar: any SwiftUiMultiProgressView
     ) {
         let task = Task<Void, Never>.detached(priority: .background) { [weak self] in
             defer {
@@ -35,8 +35,8 @@ class HomeViewModel: ViewModel {
                 return
             }
             await self?.publishDailyProduction(
-                homeEnergyProgressVar: homeEnergyProgressVar,
-                solarProductionProgressVar: solarProductionProgressVar,
+                homeEnergyProgressBar: homeEnergyProgressBar,
+                solarProductionProgressBar: solarProductionProgressBar,
                 dailyProduction: dailyProduction
             )
 
@@ -49,25 +49,25 @@ class HomeViewModel: ViewModel {
     }
 
     @MainActor func publishDailyProduction(
-        homeEnergyProgressVar: some SwiftUiMultiProgressView,
-        solarProductionProgressVar: any SwiftUiMultiProgressView,
+        homeEnergyProgressBar: some SwiftUiMultiProgressView,
+        solarProductionProgressBar: any SwiftUiMultiProgressView,
         dailyProduction: DailyProduction
     ) {
         DispatchQueue.main.async {
-            homeEnergyProgressVar.updateData(
+            homeEnergyProgressBar.updateData(
                 section: HomeEnergyStorage.selfConsumed.rawValue,
                 to: Float(dailyProduction.selfConsumed / dailyProduction.totalLocal)
             )
-            homeEnergyProgressVar.updateData(
+            homeEnergyProgressBar.updateData(
                 section: HomeEnergyStorage.importedFromGrid.rawValue,
                 to: Float(dailyProduction.importedFromGrid / dailyProduction.totalLocal)
             )
 
-            solarProductionProgressVar.updateData(
+            solarProductionProgressBar.updateData(
                 section: SolarProductionStorage.selfConsumed.rawValue,
                 to: Float(dailyProduction.selfConsumed / dailyProduction.totalSolar)
             )
-            solarProductionProgressVar.updateData(
+            solarProductionProgressBar.updateData(
                 section: SolarProductionStorage.exportedToGrid.rawValue,
                 to: Float(dailyProduction.exportedToGrid / dailyProduction.totalSolar)
             )

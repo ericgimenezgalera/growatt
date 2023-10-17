@@ -11,18 +11,18 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
-public struct HomeView: View {
-    @ObservedObject private var viewModel: HomeViewModel
+public struct HomeView: BaseView {
+    @StateObject private var viewModel: HomeViewModel
     let homeEnergyProgressVar = SwiftUiMultiProgressViewImpl<HomeEnergyStorage>("Home Energy")
-
     let solarProductionProgressVar = SwiftUiMultiProgressViewImpl<SolarProductionStorage>("Solar Production")
+    var didAppear: ((HomeView) -> Void)?
 
     public init() {
         self.init(viewModel: HomeViewModel())
     }
 
     init(viewModel: HomeViewModel) {
-        self.viewModel = viewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     public var body: some View {
@@ -31,9 +31,13 @@ public struct HomeView: View {
                 if let currentProduction = viewModel.currentProduction {
                     Section(header: Text("CURRENT PRODUCTION"), content: {
                         LabeledContent("Solar production", value: "\(currentProduction.totalSolar) W")
+                            .id(HomeConstants.totalSolarId)
                         LabeledContent("Used at home", value: "\(currentProduction.useInLocal) W")
+                            .id(HomeConstants.useInLocalId)
                         LabeledContent("Export to Grid", value: "\(currentProduction.exportToGrid) W")
+                            .id(HomeConstants.exportToGridId)
                         LabeledContent("Import from Grid", value: "\(currentProduction.importFromGrid) W")
+                            .id(HomeConstants.importFromGridId)
                     })
                 }
                 Section(header: Text("DAILY PRODUCTION"), content: {
@@ -47,12 +51,14 @@ public struct HomeView: View {
                             Spacer()
                             VStack {
                                 Image(systemName: "tree")
-                                Text("\(socialContribution.tree)").font(.subheadline)
+                                Text("\(socialContribution.tree)")
+                                    .id(HomeConstants.treeId)
                             }
                             Spacer()
                             VStack {
                                 Image(systemName: "carbon.dioxide.cloud", variableValue: 100)
                                 Text("\(Int(socialContribution.co2))")
+                                    .id(HomeConstants.co2Id)
                             }
                             Spacer()
                         }
@@ -60,9 +66,10 @@ public struct HomeView: View {
                 }
             }.onAppear {
                 viewModel.loadProductionData(
-                    homeEnergyProgressVar: homeEnergyProgressVar,
-                    solarProductionProgressVar: solarProductionProgressVar
+                    homeEnergyProgressBar: homeEnergyProgressVar,
+                    solarProductionProgressBar: solarProductionProgressVar
                 )
+                didAppear?(self)
             }
         }
         .disabled(viewModel.isLoading)
@@ -71,7 +78,9 @@ public struct HomeView: View {
                 ZStack {
                     Color(white: 0, opacity: 0.75)
                     ProgressView().tint(.white)
-                }.ignoresSafeArea()
+                }
+                .ignoresSafeArea()
+                .id(HomeConstants.spinnerId)
             }
         })
     }
@@ -83,17 +92,6 @@ struct HomeView_Previews: PreviewProvider {
         model.currentProduction = Production(totalSolar: 1, exportToGrid: 2, importFromGrid: 3, useInLocal: 5)
         model.socialContribution = SocialContribution(co2: 9999, tree: 12345, coal: 54321)
         let homeView = HomeView(viewModel: model)
-//        model.publishDailyProduction(
-//            homeEnergyProgressVar: homeView.homeEnergyProgressVar,
-//            solarProductionProgressVar: homeView.solarProductionProgressVar,
-//            dailyProduction: DailyProduction(
-//                totalSolar: 10,
-//                selfConsumed: 2,
-//                exportedToGrid: 8,
-//                importedFromGrid: 4,
-//                totalLocal: 6
-//            )
-//        )
         return homeView
     }
 }
