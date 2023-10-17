@@ -4,13 +4,12 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-final class SettingsViewModelTests: XCTestCase {
-    var settingsViewModel: SettingsViewModel!
+final class SettingsViewModelTests: BaseViewModelTest<SettingsViewModel> {
     var settingsModelMock: SettingsModelMock!
     var navigationViewModelMock: NavigationViewModelMock!
 
     override func setUp() {
-        settingsViewModel = SettingsViewModel()
+        viewModel = SettingsViewModel()
         settingsModelMock = SettingsModelMock()
         navigationViewModelMock = NavigationViewModelMock()
         InjectedValues[\.settingsModel] = settingsModelMock
@@ -20,7 +19,9 @@ final class SettingsViewModelTests: XCTestCase {
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        settingsViewModel.logout(navigationViewModel: navigationViewModelMock)
+        waitForFinishedTask { viewModel in
+            viewModel.logout(navigationViewModel: self.navigationViewModelMock)
+        }
 
         wait(for: [navigateExpectation])
         XCTAssertEqual(
@@ -30,47 +31,30 @@ final class SettingsViewModelTests: XCTestCase {
     }
 
     func testGetPlantDataSuccess() async {
-        settingsViewModel.getPlantData()
+        waitForFinishedTask { $0.getPlantData() }
 
-        switch await settingsViewModel.tasks.first?.result {
-        case .success:
-            XCTAssertEqual(settingsViewModel.plantDetails, settingsModelMock.getPlantDataResult)
-        default:
-            XCTFail("Not success task")
-        }
+        XCTAssertEqual(viewModel.plantDetails, settingsModelMock.getPlantDataResult)
     }
 
     func testGetPlantDataFailed() async {
         settingsModelMock.getPlantDataResult = nil
 
-        settingsViewModel.getPlantData()
-        switch await settingsViewModel.tasks.first?.result {
-        case .success:
-            XCTAssertNil(settingsViewModel.plantDetails)
-        default:
-            XCTFail("Not success task")
-        }
+        waitForFinishedTask { $0.getPlantData() }
+
+        XCTAssertNil(viewModel.plantDetails)
     }
 
     func testGetPlantNotReloadInformationWhenCalledAgain() async {
         let expectedPlantDetails = settingsModelMock.getPlantDataResult
-        settingsViewModel.getPlantData()
 
-        switch await settingsViewModel.tasks.first?.result {
-        case .success:
-            XCTAssertEqual(settingsViewModel.plantDetails, expectedPlantDetails)
-        default:
-            XCTFail("Not success task")
-        }
+        waitForFinishedTask { $0.getPlantData() }
+
+        XCTAssertEqual(viewModel.plantDetails, expectedPlantDetails)
 
         settingsModelMock.getPlantDataResult = nil
-        settingsViewModel.getPlantData()
 
-        switch await settingsViewModel.tasks.first?.result {
-        case .success:
-            XCTAssertEqual(settingsViewModel.plantDetails, expectedPlantDetails)
-        default:
-            XCTFail("Not success task")
-        }
+        waitForFinishedTask { $0.getPlantData() }
+
+        XCTAssertEqual(viewModel.plantDetails, expectedPlantDetails)
     }
 }

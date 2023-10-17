@@ -12,7 +12,6 @@ import Foundation
 
 class SettingsViewModel: ViewModel {
     @Injected(\.settingsModel) private var settingsModel: SettingsModel
-    @Published var isLoading: Bool = true
     @Published var plantDetails: PlantDetails?
 
     func logout(navigationViewModel: NavigationViewModel) {

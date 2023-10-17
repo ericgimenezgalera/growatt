@@ -9,12 +9,19 @@
 import Foundation
 import SwiftUI
 
-public struct SettingsView: View {
+public struct SettingsView: BaseView {
     @AppStorage(usernameUserDefaultsKey) var username: String = ""
+    @StateObject private var viewModel: SettingsViewModel
     var navigationViewModel: NavigationViewModel
-    @StateObject private var viewModel = SettingsViewModel()
+    var didAppear: ((SettingsView) -> Void)?
+
     public init(_ navigationViewModel: NavigationViewModel) {
+        self.init(navigationViewModel, viewModel: SettingsViewModel())
+    }
+
+    init(_ navigationViewModel: NavigationViewModel, viewModel: SettingsViewModel) {
         self.navigationViewModel = navigationViewModel
+        _viewModel = StateObject(wrappedValue: viewModel)
     }
 
     public var body: some View {
@@ -25,35 +32,44 @@ public struct SettingsView: View {
                     Section(header: Text("PLANT DETAILS"), content: {
                         HStack {
                             LabeledContent("Name", value: plantDetails.name)
+                                .id(SettingsConstants.plantNameId)
                         }
                         HStack {
                             LabeledContent("Power", value: "\(plantDetails.power) W")
+                                .id(SettingsConstants.plantPowerId)
                         }
                     })
                     Section(header: Text("INVERTER DETAILS"), content: {
                         HStack {
                             LabeledContent("Device Model", value: plantDetails.inverterModel)
+                                .id(SettingsConstants.inverterModelId)
                         }
                         HStack {
                             LabeledContent("Serial Number", value: plantDetails.inverterSerialNumber)
+                                .id(SettingsConstants.inverterSerialNumberId)
                         }
                     })
                     Section(header: Text("DATALOG DETAILS"), content: {
                         HStack {
                             LabeledContent("Device model", value: plantDetails.datalogType)
+                                .id(SettingsConstants.datalogModelId)
                         }
                         HStack {
                             LabeledContent("Serial Number", value: plantDetails.datalogSerialNumber)
+                                .id(SettingsConstants.datalogSerialNumberId)
                         }
                     })
                 } else {
                     Section(header: Text("PLANT DETAILS"), content: {
-                        ProgressView().frame(alignment: .center)
+                        ProgressView()
+                            .frame(alignment: .center)
+                            .id(SettingsConstants.sipnnerId)
                     })
                 }
             }
         }.onAppear {
             viewModel.getPlantData()
+            didAppear?(self)
         }
     }
 
@@ -67,6 +83,7 @@ public struct SettingsView: View {
                         .frame(width: 100, height: 100, alignment: .center)
                     Text(username)
                         .font(.title)
+                        .id(SettingsConstants.usernameId)
                     Spacer()
                     Button(action: {
                         viewModel.logout(navigationViewModel: navigationViewModel)
@@ -83,6 +100,7 @@ public struct SettingsView: View {
                     })
                     .background(Color.red)
                     .cornerRadius(25)
+                    .id(SettingsConstants.logoutId)
                 }
                 Spacer()
             }

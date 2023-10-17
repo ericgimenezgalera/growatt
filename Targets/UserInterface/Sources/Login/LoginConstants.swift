@@ -8,9 +8,11 @@
 
 import Foundation
 
-let usernameTextFieldId = "login_username"
-let passwordTextFieldId = "login_secret_passowrd"
-let passwordSecureFieldId = "login_password"
-let eyeButtonId = "login_eye"
-let signinButtonId = "login_sign_in"
-let spinnerViewId = "login_spinner_view"
+enum LoginConstants {
+    static let usernameTextFieldId = "login_username"
+    static let passwordTextFieldId = "login_secret_passowrd"
+    static let passwordSecureFieldId = "login_password"
+    static let eyeButtonId = "login_eye"
+    static let signinButtonId = "login_sign_in"
+    static let spinnerViewId = "login_spinner_view"
+}

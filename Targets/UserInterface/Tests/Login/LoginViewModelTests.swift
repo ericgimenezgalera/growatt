@@ -22,9 +22,9 @@ final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        waitForFinishedTask {
-            self.viewModel.isLoading = true
-            self.viewModel.login(
+        waitForFinishedTask { viewModel in
+            viewModel.isLoading = true
+            viewModel.login(
                 username: self.username,
                 password: self.password,
                 navigationViewModel: self.navigationViewModelMock
@@ -39,9 +39,9 @@ final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
     @MainActor func testLoginDenied() {
         loginModelMock.loginResult = false
 
-        waitForFinishedTask {
-            self.viewModel.isLoading = true
-            self.viewModel.login(
+        waitForFinishedTask { viewModel in
+            viewModel.isLoading = true
+            viewModel.login(
                 username: self.username,
                 password: self.password,
                 navigationViewModel: self.navigationViewModelMock
@@ -62,9 +62,9 @@ final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
         let navigateExpectation = expectation(description: "Navigation success")
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        waitForFinishedTask {
-            self.viewModel.isLoading = true
-            self.viewModel.loginWithBiometric(
+        waitForFinishedTask { viewModel in
+            viewModel.isLoading = true
+            viewModel.loginWithBiometric(
                 username: self.username,
                 navigationViewModel: self.navigationViewModelMock
             )
@@ -81,9 +81,9 @@ final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
         navigateExpectation.isInverted = true
         navigationViewModelMock.navigateExpectation = navigateExpectation
 
-        waitForFinishedTask {
-            self.viewModel.isLoading = true
-            self.viewModel.loginWithBiometric(
+        waitForFinishedTask { viewModel in
+            viewModel.isLoading = true
+            viewModel.loginWithBiometric(
                 username: self.username,
                 navigationViewModel: self.navigationViewModelMock
             )

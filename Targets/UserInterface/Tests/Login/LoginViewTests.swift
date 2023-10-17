@@ -32,7 +32,7 @@ final class LoginViewTests: BaseViewTest<LoginView> {
             XCTAssertTrue(self.loginViewModelMock.loginWithBiometricCalled)
             XCTAssertEqual(self.loginViewModelMock.loginWithBiometricParameters?.0, "")
             XCTAssertTrue(self.loginViewModelMock.isLoading)
-            XCTAssertFalse(try view.find(viewWithId: spinnerViewId).isHidden())
+            XCTAssertFalse(try view.find(viewWithId: LoginConstants.spinnerViewId).isHidden())
         }
     }
 
@@ -43,7 +43,7 @@ final class LoginViewTests: BaseViewTest<LoginView> {
             XCTAssertTrue(self.loginViewModelMock.loginWithBiometricCalled)
             XCTAssertEqual(self.loginViewModelMock.loginWithBiometricParameters?.0, self.fakeUsername)
             XCTAssertTrue(self.loginViewModelMock.isLoading)
-            XCTAssertFalse(try view.find(viewWithId: spinnerViewId).isHidden())
+            XCTAssertFalse(try view.find(viewWithId: LoginConstants.spinnerViewId).isHidden())
         }
     }
 
@@ -51,18 +51,18 @@ final class LoginViewTests: BaseViewTest<LoginView> {
         onAppearView { view in
             self.loginViewModelMock.isLoading = false
 
-            _ = try view.find(viewWithId: passwordSecureFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: passwordTextFieldId))
+            _ = try view.find(viewWithId: LoginConstants.passwordSecureFieldId)
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordTextFieldId))
 
-            try view.find(viewWithId: eyeButtonId).button().tap()
+            try view.find(viewWithId: LoginConstants.eyeButtonId).button().tap()
 
-            _ = try view.find(viewWithId: passwordTextFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: passwordSecureFieldId))
+            _ = try view.find(viewWithId: LoginConstants.passwordTextFieldId)
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordSecureFieldId))
 
-            try view.find(viewWithId: eyeButtonId).button().tap()
+            try view.find(viewWithId: LoginConstants.eyeButtonId).button().tap()
 
-            _ = try view.find(viewWithId: passwordSecureFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: passwordTextFieldId))
+            _ = try view.find(viewWithId: LoginConstants.passwordSecureFieldId)
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordTextFieldId))
         }
     }
 
@@ -70,13 +70,13 @@ final class LoginViewTests: BaseViewTest<LoginView> {
         onAppearView { view in
             self.loginViewModelMock.isLoading = false
 
-            XCTAssertThrowsError(try view.find(viewWithId: signinButtonId).button().tap())
-            try view.find(viewWithId: usernameTextFieldId).textField().setInput(self.fakeUsername)
-            XCTAssertThrowsError(try view.find(viewWithId: signinButtonId).button().tap())
-            try view.find(viewWithId: passwordSecureFieldId).secureField().setInput(self.fakePassword)
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.signinButtonId).button().tap())
+            try view.find(viewWithId: LoginConstants.usernameTextFieldId).textField().setInput(self.fakeUsername)
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.signinButtonId).button().tap())
+            try view.find(viewWithId: LoginConstants.passwordSecureFieldId).secureField().setInput(self.fakePassword)
             XCTAssertFalse(self.loginViewModelMock.loginCalled)
 
-            try view.find(viewWithId: signinButtonId).button().tap()
+            try view.find(viewWithId: LoginConstants.signinButtonId).button().tap()
 
             XCTAssertTrue(self.loginViewModelMock.loginCalled)
             XCTAssertEqual(self.loginViewModelMock.loginParameters?.0, self.fakeUsername)
@@ -87,13 +87,13 @@ final class LoginViewTests: BaseViewTest<LoginView> {
     func testSpinner() throws {
         onAppearView { view in
             XCTAssertTrue(self.loginViewModelMock.isLoading)
-            _ = try view.find(viewWithId: spinnerViewId)
+            _ = try view.find(viewWithId: LoginConstants.spinnerViewId)
 
             self.loginViewModelMock.isLoading = false
-            XCTAssertThrowsError(try view.find(viewWithId: spinnerViewId))
+            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.spinnerViewId))
 
             self.loginViewModelMock.isLoading = true
-            _ = try view.find(viewWithId: spinnerViewId)
+            _ = try view.find(viewWithId: LoginConstants.spinnerViewId)
         }
     }
 }

@@ -13,11 +13,11 @@ import XCTest
 class BaseViewModelTest<T: ViewModel>: XCTestCase {
     var viewModel: T!
 
-    func waitForFinishedTask(execute: @escaping () -> Void) {
+    func waitForFinishedTask(execute: @escaping (T) -> Void) {
         let completaionExpectation = expectation(description: "Completion task")
 
         Task {
-            execute()
+            execute(viewModel)
 
             switch await viewModel.tasks.first?.result {
             case .success:

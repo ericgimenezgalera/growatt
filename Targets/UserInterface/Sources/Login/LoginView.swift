@@ -31,7 +31,7 @@ public struct LoginView: BaseView {
                 text: $username,
                 prompt: Text("Login").foregroundColor(.blue)
             )
-            .id(usernameTextFieldId)
+            .id(LoginConstants.usernameTextFieldId)
             .padding(10)
             .overlay {
                 RoundedRectangle(cornerRadius: 10)
@@ -47,7 +47,7 @@ public struct LoginView: BaseView {
                             prompt: Text("Password")
                                 .foregroundColor(.blue)
                         )
-                        .id(passwordTextFieldId)
+                        .id(LoginConstants.passwordTextFieldId)
                     } else {
                         SecureField(
                             "Password",
@@ -55,7 +55,7 @@ public struct LoginView: BaseView {
                             prompt: Text("Password")
                                 .foregroundColor(.blue)
                         )
-                        .id(passwordSecureFieldId)
+                        .id(LoginConstants.passwordSecureFieldId)
                     }
                 }
                 .padding(10)
@@ -70,7 +70,7 @@ public struct LoginView: BaseView {
                     Image(systemName: showPassword ? "eye.slash" : "eye")
                         .foregroundColor(.blue)
                 }
-                .id(eyeButtonId)
+                .id(LoginConstants.eyeButtonId)
             }
             .padding(.horizontal)
 
@@ -89,7 +89,7 @@ public struct LoginView: BaseView {
                     .bold()
                     .foregroundColor(.white)
             }
-            .id(signinButtonId)
+            .id(LoginConstants.signinButtonId)
             .frame(height: 50)
             .frame(maxWidth: .infinity) // how to make a button fill all the space available horizontaly
             .background(
@@ -123,7 +123,7 @@ public struct LoginView: BaseView {
                     ProgressView().tint(.white)
                 }
                 .ignoresSafeArea()
-                .id(spinnerViewId)
+                .id(LoginConstants.spinnerViewId)
             }
         })
         .onAppear {
