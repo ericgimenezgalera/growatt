@@ -8,7 +8,7 @@
 
 import Foundation
 
-class KeychainOperations {
+enum KeychainOperations {
     static func add(value: Data, account: String) throws {
         let status = SecItemAdd([
             kSecClass: kSecClassGenericPassword,
