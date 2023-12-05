@@ -12,6 +12,10 @@ function install_brew_if_not_exist() {
     if ! [[ -x "$(command -v brew)" ]]; then
         echo "Brew has not found. Installing it...";
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        if ! [[ -x "$(command -v brew)" ]]; then
+            (echo; echo 'eval "$(/opt/homebrew/bin/brew shellenv)"') >> /Users/ericgimenezgalera/.zprofile
+            eval "$(/opt/homebrew/bin/brew shellenv)"
+        fi
     else
         echo "Brew already installed";
     fi
