@@ -16,4 +16,5 @@ enum HomeConstants {
     static let treeId = "home_tree"
     static let co2Id = "home_co2"
     static let spinnerId = "home_spinner"
+    static let formId = "home_form"
 }

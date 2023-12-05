@@ -65,11 +65,7 @@ public struct HomeView: BaseView {
                     })
                 }
             }.onAppear {
-                viewModel.loadProductionData(
-                    homeEnergyProgressBar: homeEnergyProgressVar,
-                    solarProductionProgressBar: solarProductionProgressVar
-                )
-                didAppear?(self)
+                loadData()
             }
         }
         .disabled(viewModel.isLoading)
@@ -83,6 +79,17 @@ public struct HomeView: BaseView {
                 .id(HomeConstants.spinnerId)
             }
         })
+        .refreshable {
+            loadData()
+        }.id(HomeConstants.formId)
+    }
+
+    private func loadData() {
+        viewModel.loadProductionData(
+            homeEnergyProgressBar: homeEnergyProgressVar,
+            solarProductionProgressBar: solarProductionProgressVar
+        )
+        didAppear?(self)
     }
 }
 
