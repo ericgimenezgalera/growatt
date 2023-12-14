@@ -10,6 +10,12 @@ import API
 import DependencyInjection
 import Foundation
 
+private enum DataResult {
+    case socialContribution(SocialContribution?)
+    case dailyProduction(DailyProduction?)
+    case production(Production?)
+}
+
 class HomeViewModel: ViewModel {
     @Injected(\.homeModel) private var homeModel: HomeModel
     @Published var isLoading: Bool = true
@@ -28,12 +34,14 @@ class HomeViewModel: ViewModel {
             }
 
             guard
-                let socialContribution = await self?.homeModel.loadSocialContribution(),
-                let dailyProduction = await self?.homeModel.loadDailyProduction(),
-                let currentProduction = await self?.homeModel.loadCurrentProduction()
+                let (socialContribution, dailyProduction, currentProduction) = await self?.fetchData(),
+                let socialContribution = socialContribution,
+                let dailyProduction = dailyProduction,
+                let currentProduction = currentProduction
             else {
                 return
             }
+
             await self?.publishDailyProduction(
                 homeEnergyProgressBar: homeEnergyProgressBar,
                 solarProductionProgressBar: solarProductionProgressBar,
@@ -46,6 +54,43 @@ class HomeViewModel: ViewModel {
             )
         }
         tasks.append(task)
+    }
+
+    private func fetchData() async -> (SocialContribution?, DailyProduction?, Production?) {
+        await withTaskGroup(of: DataResult.self) { [self] group -> (
+            SocialContribution?,
+            DailyProduction?,
+            Production?
+        ) in
+            group.addTask {
+                .socialContribution(await self.homeModel.loadSocialContribution())
+            }
+
+            group.addTask {
+                .dailyProduction(await self.homeModel.loadDailyProduction())
+            }
+
+            group.addTask {
+                .production(await self.homeModel.loadCurrentProduction())
+            }
+
+            var finalProduction: Production?
+            var finalSocialContribution: SocialContribution?
+            var finalDailyProduction: DailyProduction?
+
+            for await value in group {
+                switch value {
+                case let .production(production):
+                    finalProduction = production
+                case let .socialContribution(socialContribution):
+                    finalSocialContribution = socialContribution
+                case let .dailyProduction(dailyProduction):
+                    finalDailyProduction = dailyProduction
+                }
+            }
+
+            return (finalSocialContribution, finalDailyProduction, finalProduction)
+        }
     }
 
     @MainActor func publishDailyProduction(
