@@ -9,7 +9,7 @@ final class HomeViewModelTests: BaseViewModelTest<HomeViewModel> {
     var homeEnergyProgressViewMock: SwiftUiMultiProgressViewMock!
     var solarProductionProgressViewMock: SwiftUiMultiProgressViewMock!
 
-    override func setUp() {
+    @MainActor override func setUp() {
         viewModel = HomeViewModel()
         homeModelMock = HomeModelMock()
         homeEnergyProgressViewMock = .init()
@@ -28,7 +28,7 @@ final class HomeViewModelTests: BaseViewModelTest<HomeViewModel> {
         XCTAssertEqual(viewModel.currentProduction, homeModelMock.loadCurrentProductionResult)
         XCTAssertEqual(viewModel.socialContribution, homeModelMock.loadSocialContributionResult)
         let dailyProductionMock = homeModelMock.loadDailyProductionResult
-        let homeEnergyCalls = homeEnergyProgressViewMock.updatedDataCalls
+        let homeEnergyCalls = await homeEnergyProgressViewMock.updatedDataCalls
         XCTAssertEqual(homeEnergyCalls.count, 2)
         XCTAssertEqual(homeEnergyCalls[0].0, 0)
         XCTAssertEqual(
@@ -41,7 +41,7 @@ final class HomeViewModelTests: BaseViewModelTest<HomeViewModel> {
             Float(dailyProductionMock.importedFromGrid / dailyProductionMock.totalLocal)
         )
 
-        let solarProductionCalls = solarProductionProgressViewMock.updatedDataCalls
+        let solarProductionCalls = await solarProductionProgressViewMock.updatedDataCalls
         XCTAssertEqual(solarProductionCalls.count, 2)
         XCTAssertEqual(solarProductionCalls[0].0, 0)
         XCTAssertEqual(

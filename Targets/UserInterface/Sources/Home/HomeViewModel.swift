@@ -97,32 +97,30 @@ class HomeViewModel: ViewModel {
         homeEnergyProgressBar: some SwiftUiMultiProgressView,
         solarProductionProgressBar: any SwiftUiMultiProgressView,
         dailyProduction: DailyProduction
-    ) {
-        DispatchQueue.main.async {
-            homeEnergyProgressBar.updateData(
-                section: HomeEnergyStorage.selfConsumed.rawValue,
-                to: Float(dailyProduction.selfConsumed / dailyProduction.totalLocal)
-            )
-            homeEnergyProgressBar.updateData(
-                section: HomeEnergyStorage.importedFromGrid.rawValue,
-                to: Float(dailyProduction.importedFromGrid / dailyProduction.totalLocal)
-            )
+    ) async {
+        await homeEnergyProgressBar.updateData(
+            section: HomeEnergyStorage.selfConsumed.rawValue,
+            to: Float(dailyProduction.selfConsumed / dailyProduction.totalLocal)
+        )
+        await homeEnergyProgressBar.updateData(
+            section: HomeEnergyStorage.importedFromGrid.rawValue,
+            to: Float(dailyProduction.importedFromGrid / dailyProduction.totalLocal)
+        )
 
-            solarProductionProgressBar.updateData(
-                section: SolarProductionStorage.selfConsumed.rawValue,
-                to: Float(dailyProduction.selfConsumed / dailyProduction.totalSolar)
-            )
-            solarProductionProgressBar.updateData(
-                section: SolarProductionStorage.exportedToGrid.rawValue,
-                to: Float(dailyProduction.exportedToGrid / dailyProduction.totalSolar)
-            )
-        }
+        await solarProductionProgressBar.updateData(
+            section: SolarProductionStorage.selfConsumed.rawValue,
+            to: Float(dailyProduction.selfConsumed / dailyProduction.totalSolar)
+        )
+        await solarProductionProgressBar.updateData(
+            section: SolarProductionStorage.exportedToGrid.rawValue,
+            to: Float(dailyProduction.exportedToGrid / dailyProduction.totalSolar)
+        )
     }
 
     @MainActor func publishProductionData(
         socialContribution: SocialContribution,
         currentProduction: Production
-    ) {
+    ) async {
         self.socialContribution = socialContribution
         self.currentProduction = currentProduction
     }

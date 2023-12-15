@@ -10,9 +10,10 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
+@MainActor
 protocol SwiftUiMultiProgressView {
-    func updateData(section: Int, to progress: Float)
-    func resetProgress()
+    func updateData(section: Int, to progress: Float) async
+    func resetProgress() async
 }
 
 struct SwiftUiMultiProgressViewImpl<T: ProgressViewStorageType>: UIViewRepresentable, SwiftUiMultiProgressView {
@@ -31,13 +32,13 @@ struct SwiftUiMultiProgressViewImpl<T: ProgressViewStorageType>: UIViewRepresent
         // Updates the state of the specified view with new information from SwiftUI.
     }
 
-    func updateData(section: Int, to progress: Float) {
+    @MainActor func updateData(section: Int, to progress: Float) async {
         UIView.animate(withDuration: 0.5) {
             view.updateData(section: section, to: progress)
         }
     }
 
-    func resetProgress() {
+    @MainActor func resetProgress() async {
         UIView.animate(withDuration: 0.5) {
             view.resetProgress()
         }
