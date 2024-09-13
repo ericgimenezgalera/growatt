@@ -17,10 +17,10 @@ extension Project {
     """
 
     /// Helper function to create the Project for this ExampleApp
-    public static func app(name: String, platform: Platform, additionalTargets: [Target]) -> Project {
+    public static func app(name: String, destinations: Destinations, additionalTargets: [Target]) -> Project {
         var targets = makeAppTargets(
             name: name,
-            platform: platform,
+            destinations: destinations,
             dependencies: additionalTargets.filter({!$0.bundleId.contains("Test") }).map { TargetDependency.target(name: $0.name) }
         )
         targets += additionalTargets
@@ -34,10 +34,10 @@ extension Project {
     // MARK: - Private
 
     /// Helper function to create a framework target and an associated unit test target
-    public static func makeFrameworkTargets(name: String, platform: Platform, dependencies: [TargetDependency], testDependencies: [TargetDependency]) -> [Target] {
+    public static func makeFrameworkTargets(name: String, destinations: Destinations, dependencies: [TargetDependency], testDependencies: [TargetDependency]) -> [Target] {
         var testDependencies = testDependencies
-        let sources = Target(name: name,
-                platform: platform,
+        let sources = Target.target(name: name,
+                                    destinations: destinations,
                 product: .framework,
                 bundleId: "eric.gimenez.galera.\(name)",
                 infoPlist: .default,
@@ -47,8 +47,8 @@ extension Project {
                 dependencies: dependencies)
         testDependencies.append(TargetDependency.target(name: name))
         
-        let tests = Target(name: "\(name)Tests",
-                platform: platform,
+        let tests = Target.target(name: "\(name)Tests",
+                destinations: destinations,
                 product: .unitTests,
                 bundleId: "eric.gimenez.galera.\(name)Tests",
                 infoPlist: .default,
@@ -60,9 +60,8 @@ extension Project {
     }
 
     /// Helper function to create the application target and the unit test target.
-    private static func makeAppTargets(name: String, platform: Platform, dependencies: [TargetDependency]) -> [Target] {
-        let platform: Platform = platform
-        let infoPlist: [String: InfoPlist.Value] = [
+    private static func makeAppTargets(name: String, destinations: Destinations, dependencies: [TargetDependency]) -> [Target] {
+        let infoPlist: [String: Plist.Value] = [
             "CFBundleShortVersionString": "1.0",
             "CFBundleVersion": "1",
             "UIMainStoryboardFile": "",
@@ -70,9 +69,9 @@ extension Project {
             "NSFaceIDUsageDescription": "Use Face ID instead of a password to access your account."
             ]
 
-        let mainTarget = Target(
+        let mainTarget = Target.target(
             name: name,
-            platform: platform,
+            destinations: destinations,
             product: .app,
             bundleId: "eric.gimenez.galera.\(name)",
             infoPlist: .extendingDefault(with: infoPlist),
@@ -82,9 +81,9 @@ extension Project {
             dependencies: dependencies
         )
 
-        let testTarget = Target(
+        let testTarget = Target.target(
             name: "\(name)Tests",
-            platform: platform,
+            destinations: destinations,
             product: .unitTests,
             bundleId: "eric.gimenez.galera.\(name)Tests",
             infoPlist: .default,

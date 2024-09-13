@@ -17,7 +17,7 @@ let viewInspector = "ViewInspector"
 
 let api = Project.makeFrameworkTargets(
     name: apiName,
-    platform: .iOS,
+    destinations: .iOS,
     dependencies: [
         .target(name: keyChainWrapperName),
         .target(name: diName),
@@ -30,7 +30,7 @@ let api = Project.makeFrameworkTargets(
 
 let uiFramework = Project.makeFrameworkTargets(
     name: uiName,
-    platform: .iOS,
+    destinations: .iOS,
     dependencies: [
         .target(name: apiName),
         .target(name: diName),
@@ -44,14 +44,14 @@ let uiFramework = Project.makeFrameworkTargets(
 
 let diFramework = Project.makeFrameworkTargets(
     name: diName,
-    platform: .iOS,
+    destinations: .iOS,
     dependencies: [],
     testDependencies: []
 )
 
 let keyChainWrapper = Project.makeFrameworkTargets(
     name: keyChainWrapperName,
-    platform: .iOS,
+    destinations: .iOS,
     dependencies: [
         .target(name: diName)
     ],
@@ -61,6 +61,6 @@ let keyChainWrapper = Project.makeFrameworkTargets(
 // Creates our project using a helper function defined in ProjectDescriptionHelpers
 let project = Project.app(
     name: "Growatt",
-    platform: .iOS,
+    destinations: .iOS,
     additionalTargets: api + uiFramework + diFramework + keyChainWrapper
 )

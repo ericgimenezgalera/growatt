@@ -62,7 +62,7 @@ extension ConnectionManager {
         }
 
         func addHeaders(headers: HTTPHeaders) -> Builder {
-            headers.forEach { httpHeader in
+            for httpHeader in headers {
                 request.headers.add(httpHeader)
             }
             return self

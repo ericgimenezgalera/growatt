@@ -2,7 +2,7 @@
 function install_tuist_if_not_exist() {
     if ! [[ -x "$(command -v tuist)" ]]; then
         echo "Tuist has not found. Installing it...";
-        curl -Ls https://install.tuist.io | bash
+        mise install tuist@4.26.0
     else
         echo "Tuist already installed";
     fi

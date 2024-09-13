@@ -1,4 +1,4 @@
 rm -Rf Growatt.*
 tuist clean
-tuist fetch
+tuist install
 tuist generate

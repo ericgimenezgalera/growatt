@@ -12,7 +12,7 @@ class ViewModel: ObservableObject {
     var tasks: [Task<Void, Never>] = []
 
     deinit {
-        tasks.forEach { task in
+        for task in tasks {
             task.cancel()
         }
     }
