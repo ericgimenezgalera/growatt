@@ -9,8 +9,8 @@
 import DependencyInjection
 import Foundation
 
-private struct ProductionServiceKey: InjectionKey {
-    static var currentValue: ProductionService = ConnectionManager.shared
+private struct ProductionServiceKey: @preconcurrency InjectionKey {
+    @MainActor static var currentValue: ProductionService = ConnectionManager.shared
 }
 
 public extension InjectedValues {

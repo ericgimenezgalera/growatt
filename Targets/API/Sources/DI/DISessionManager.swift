@@ -9,8 +9,8 @@
 import DependencyInjection
 import Foundation
 
-private struct SessionManagerKey: InjectionKey {
-    static var currentValue: SessionManager = ConnectionManager.shared
+private struct SessionManagerKey: @preconcurrency InjectionKey {
+    @MainActor static var currentValue: SessionManager = ConnectionManager.shared
 }
 
 public extension InjectedValues {

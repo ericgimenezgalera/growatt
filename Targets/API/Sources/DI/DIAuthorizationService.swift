@@ -9,8 +9,8 @@
 import DependencyInjection
 import Foundation
 
-private struct AuthorizationServiceKey: InjectionKey {
-    static var currentValue: AuthorizationService = ConnectionManager.shared
+private struct AuthorizationServiceKey: @preconcurrency InjectionKey {
+    @MainActor static var currentValue: AuthorizationService = ConnectionManager.shared
 }
 
 public extension InjectedValues {
