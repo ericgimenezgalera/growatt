@@ -1,80 +1,65 @@
 //
 //  LoginViewModel.swift
-//  UIFramework
+//  Growatt
 //
-//  Created by Eric Gimènez Galera on 13/9/23.
-//  Copyright © 2023 eric.gimenez.galera. All rights reserved.
+//  Created by Eric Gimenez on 16/2/25.
+//  Copyright © 2025 eric.gimenez.galera. All rights reserved.
 //
 
 import DependencyInjection
 import Foundation
+import SwiftUI
 
-enum LoginViewModelError: LocalizedError {
-    case invalidPassword
+public class LoginViewModel: LoginView.Output {
+    @Injected(\.loginUseCase) private var loginModel: LoginUseCase
+    @AppStorage(usernameUserDefaultsKey) var username: String = ""
 
-    var errorDescription: String? {
-        switch self {
-        case .invalidPassword:
-            return "Invalid password, please try again"
+    public let viewState: LoginView.ViewState
+    let passwordFieldViewModel: PasswordFieldViewModel
+    let navigationViewModel: NavigationViewModel
+
+    public init(navigationViewModel: NavigationViewModel) {
+        self.navigationViewModel = navigationViewModel
+        passwordFieldViewModel = .init(
+            passwordTextFieldId: LoginConstants.passwordTextFieldId,
+            passwordSecureFieldId: LoginConstants.passwordSecureFieldId,
+            eyeButtonId: LoginConstants.eyeButtonId
+        )
+
+        viewState = .init(
+            username: "",
+            loginViewState: .init(buttonId: LoginConstants.signinButtonId),
+            passwordViewState: passwordFieldViewModel.viewState
+        )
+
+        viewState.loginViewState.action = { [weak self] in
+            await self?.didTapLogin()
         }
+        viewState.username = username
+        viewState.output = self
     }
 
-    var recoverySuggestion: String? {
-        switch self {
-        case .invalidPassword:
-            return "Login failed with this user and password, please change it and try again"
+    func didTapLogin() async {
+        guard await loginModel.login(username: viewState.username, password: viewState.passwordViewState.password)
+        else {
+            await showInvalidPassword()
+            return
         }
-    }
-}
 
-class LoginViewModel: ViewModel {
-    @Injected(\.loginModel) private var loginModel: LoginModel
-    @MainActor @Published var error: LoginViewModelError?
-    @Published var isLoading: Bool = false
-
-    func login(username: String, password: String, navigationViewModel: NavigationViewModel) {
-        let task = Task.detached(priority: .background) { [weak self] in
-            defer {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.isLoading = false
-                }
-            }
-            guard let loginModel = self?.loginModel else {
-                return
-            }
-
-            guard await loginModel.login(username: username, password: password) else {
-                await self?.showInvalidPassword()
-                return
-            }
-
-            await navigationViewModel.navigate(route: LoginNavigationRoute.onLogged)
-        }
-        tasks.append(task)
+        await navigationViewModel.navigate(route: LoginNavigationRoute.onLogged)
     }
 
-    func loginWithBiometric(username: String, navigationViewModel: NavigationViewModel) {
-        let task = Task.detached(priority: .background) { [weak self] in
-            defer {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.isLoading = false
-                }
-            }
-            guard let loginModel = self?.loginModel else {
-                return
-            }
-
-            guard await loginModel.loginWithBiometric(username: username)
-            else {
-                return
-            }
-
-            await navigationViewModel.navigate(route: LoginNavigationRoute.onLogged)
+    func loginWithBiometric() async {
+        guard await loginModel.loginWithBiometric(username: viewState.username) else {
+            return
         }
-        tasks.append(task)
+
+        await navigationViewModel.navigate(route: LoginNavigationRoute.onLogged)
     }
 
-    @MainActor func showInvalidPassword() {
-        error = LoginViewModelError.invalidPassword
+    @MainActor
+    private func showInvalidPassword() {
+        viewState.alertError = LoginViewModelError.invalidPassword
+        viewState.showError = true
     }
 }

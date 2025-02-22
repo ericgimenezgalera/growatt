@@ -32,7 +32,7 @@ public enum ConnectionManagerError: Error, Equatable {
     }
 }
 
-public final class ConnectionManager: Sendable {
+public class ConnectionManager {
     typealias HTTPResponseHeaders = [String: String]
 
     public static let shared: ConnectionManager = .init()

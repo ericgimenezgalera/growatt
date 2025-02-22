@@ -1,25 +1,54 @@
+//
+//  LoginView.swift
+//  Growatt
+//
+//  Created by Eric Gimenez on 16/2/25.
+//  Copyright © 2025 eric.gimenez.galera. All rights reserved.
+//
+
 import DependencyInjection
 import SwiftUI
 
-public struct LoginView: BaseView {
-    @AppStorage(usernameUserDefaultsKey) var username: String = ""
-    @State var password: String = ""
-    @State var showPassword: Bool = false
-    @StateObject var viewModel: LoginViewModel
-    var didAppear: ((Self) -> Void)?
-    var navigationViewModel: NavigationViewModel
+public struct LoginView: View {
+    public class ViewState: ObservableObject {
+        @Published var username: String
+        @Published var showError: Bool = false
+        @Published var alertError: LoginViewModelError?
+        let loginViewState: AsyncButtonViewState
+        let passwordViewState: PasswordField.ViewState
+        var output: Output?
 
-    var isSignInButtonDisabled: Bool {
-        [username, password].contains(where: \.isEmpty)
+        init(
+            username: String,
+            loginViewState: AsyncButtonViewState,
+            passwordViewState: PasswordField.ViewState
+        ) {
+            self.username = username
+            self.loginViewState = loginViewState
+            self.passwordViewState = passwordViewState
+        }
     }
 
-    public init(_ navigationViewModel: NavigationViewModel) {
-        self.init(navigationViewModel, viewModel: LoginViewModel())
+    protocol Output: AnyObject {
+        func loginWithBiometric() async
     }
 
-    init(_ navigationViewModel: NavigationViewModel, viewModel: LoginViewModel) {
-        self.navigationViewModel = navigationViewModel
-        _viewModel = StateObject(wrappedValue: viewModel)
+    @ObservedObject var viewState: ViewState
+    @ObservedObject var passwordViewState: PasswordField.ViewState
+    @ObservedObject var loginViewState: AsyncButtonViewState
+
+    var showLoading: Bool {
+        viewState.loginViewState.showProgressView || passwordViewState.passwordVisibilityViewState.showProgressView
+    }
+
+    var disabledLoginButton: Bool {
+        viewState.username.isEmpty || passwordViewState.password.isEmpty
+    }
+
+    public init(viewState: ViewState) {
+        self.viewState = viewState
+        passwordViewState = viewState.passwordViewState
+        loginViewState = viewState.loginViewState
     }
 
     public var body: some View {
@@ -28,72 +57,34 @@ public struct LoginView: BaseView {
 
             TextField(
                 "Name",
-                text: $username,
-                prompt: Text("Login").foregroundColor(.blue)
+                text: $viewState.username,
+                prompt: Text("Login")
+                    .foregroundColor(.gray)
             )
             .id(LoginConstants.usernameTextFieldId)
             .padding(10)
             .overlay {
                 RoundedRectangle(cornerRadius: 10)
-                    .stroke(.blue, lineWidth: 2)
+                    .stroke(.gray, lineWidth: 1)
             }
             .padding(.horizontal)
-            HStack {
-                Group {
-                    if showPassword {
-                        TextField(
-                            "Password",
-                            text: $password,
-                            prompt: Text("Password")
-                                .foregroundColor(.blue)
-                        )
-                        .id(LoginConstants.passwordTextFieldId)
-                    } else {
-                        SecureField(
-                            "Password",
-                            text: $password,
-                            prompt: Text("Password")
-                                .foregroundColor(.blue)
-                        )
-                        .id(LoginConstants.passwordSecureFieldId)
-                    }
-                }
-                .padding(10)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(.blue, lineWidth: 2)
-                }
 
-                Button {
-                    showPassword.toggle()
-                } label: {
-                    Image(systemName: showPassword ? "eye.slash" : "eye")
-                        .foregroundColor(.blue)
-                }
-                .id(LoginConstants.eyeButtonId)
-            }
-            .padding(.horizontal)
+            PasswordField(viewState: viewState.passwordViewState)
+                .padding(.horizontal)
 
             Spacer()
 
-            Button {
-                viewModel.isLoading = true
-                viewModel.login(
-                    username: username,
-                    password: password,
-                    navigationViewModel: navigationViewModel
-                )
-            } label: {
+            AsyncButton(viewState: viewState.loginViewState, label: {
                 Text("Sign In")
                     .font(.title2)
                     .bold()
                     .foregroundColor(.white)
-            }
+            })
             .id(LoginConstants.signinButtonId)
             .frame(height: 50)
             .frame(maxWidth: .infinity) // how to make a button fill all the space available horizontaly
             .background(
-                isSignInButtonDisabled ? LinearGradient(
+                disabledLoginButton ? LinearGradient(
                     colors: [.gray],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
@@ -101,23 +92,19 @@ public struct LoginView: BaseView {
                     LinearGradient(colors: [.blue, .red], startPoint: .topLeading, endPoint: .bottomTrailing)
             )
             .cornerRadius(20)
-            .disabled(isSignInButtonDisabled)
+            .disabled(disabledLoginButton)
             .padding()
         }
         .alert(
-            isPresented: Binding<Bool>(
-                get: { viewModel.error != nil },
-                set: { _ in
-                    viewModel.error = nil
-                    viewModel.isLoading = false
-                }
-            ),
-            error: viewModel.error,
+            isPresented: $viewState.showError,
+            error: viewState.alertError,
             actions: {}
         )
-        .disabled(viewModel.isLoading)
+        .disabled(
+            showLoading
+        )
         .overlay(Group {
-            if viewModel.isLoading {
+            if showLoading {
                 ZStack {
                     Color(white: 0, opacity: 0.75)
                     ProgressView().tint(.white)
@@ -127,21 +114,23 @@ public struct LoginView: BaseView {
             }
         })
         .onAppear {
-            viewModel.isLoading = true
-            showPassword = false
-            password = ""
-
-            viewModel.loginWithBiometric(
-                username: username,
-                navigationViewModel: navigationViewModel
-            )
-            self.didAppear?(self)
+            await viewState.output?.loginWithBiometric()
         }
     }
 }
 
-struct Login_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView(MockNavigationViewModel())
-    }
+#Preview {
+    let viewState = LoginView.ViewState(
+        username: "Test user",
+        loginViewState: .init(),
+        passwordViewState: .init(
+            passwordVisibilityViewState: .init()
+        )
+    )
+
+//    viewState.loginViewState.showProgressView = true
+//    viewState.passwordViewState.passwordVisibilityViewState.showProgressView = true
+//    viewState.passwordViewState.showPassword = true
+
+    return LoginView(viewState: viewState)
 }

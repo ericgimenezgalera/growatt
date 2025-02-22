@@ -14,6 +14,7 @@ let alamofireName = "Alamofire"
 let mockerName = "Mocker"
 let multiProgressView = "MultiProgressView"
 let viewInspector = "ViewInspector"
+let snapshotTesting = "SnapshotTesting"
 
 let api = Project.makeFrameworkTargets(
     name: apiName,
@@ -37,6 +38,7 @@ let uiFramework = Project.makeFrameworkTargets(
         .external(name: multiProgressView)
     ],
     testDependencies: [
+        .external(name: snapshotTesting),
         .external(name: viewInspector)
     ]
 )

@@ -4,92 +4,83 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-final class LoginViewModelTests: BaseViewModelTest<LoginViewModel> {
+final class LoginViewModelTests: XCTestCase {
     let username = "fakeUsername"
     let password = "fakePassword"
-    var loginModelMock: LoginModelMock!
+    var loginUseCaseMock: LoginUseCaseMock!
     var navigationViewModelMock: NavigationViewModelMock!
+    var viewModel: LoginViewModel!
 
     override func setUp() {
-        viewModel = LoginViewModel()
-        loginModelMock = LoginModelMock()
+        UserDefaults.standard.removeObject(forKey: usernameUserDefaultsKey)
+
         navigationViewModelMock = NavigationViewModelMock()
-        InjectedValues[\.loginModel] = loginModelMock
+        viewModel = LoginViewModel(navigationViewModel: navigationViewModelMock)
+        loginUseCaseMock = LoginUseCaseMock()
+        InjectedValues[\.loginUseCase] = loginUseCaseMock
     }
 
-    func testLoginSuccess() {
-        loginModelMock.loginResult = true
-        let navigateExpectation = expectation(description: "Navigation success")
-        navigationViewModelMock.navigateExpectation = navigateExpectation
-
-        waitForFinishedTask { viewModel in
-            viewModel.isLoading = true
-            viewModel.login(
-                username: self.username,
-                password: self.password,
-                navigationViewModel: self.navigationViewModelMock
-            )
-        }
-
-        wait(for: [navigateExpectation])
-        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
-        XCTAssertFalse(viewModel.isLoading)
+    func testInitialState() async {
+        XCTAssertEqual(viewModel.viewState.username, "")
+        XCTAssertNotNil(viewModel.viewState.output)
+        XCTAssertEqual(viewModel.viewState.passwordViewState.password, "")
+        XCTAssertNotNil(viewModel.viewState.passwordViewState)
     }
 
-    @MainActor func testLoginDenied() {
-        loginModelMock.loginResult = false
+    func testSetUsernameFromUserDefaults() async {
+        UserDefaults.standard.set(username, forKey: usernameUserDefaultsKey)
+        viewModel = LoginViewModel(navigationViewModel: navigationViewModelMock)
 
-        waitForFinishedTask { viewModel in
-            viewModel.isLoading = true
-            viewModel.login(
-                username: self.username,
-                password: self.password,
-                navigationViewModel: self.navigationViewModelMock
-            )
-        }
-        switch viewModel.error {
-        case .invalidPassword:
-            break
-        default:
-            XCTFail("Invalid error type")
-        }
-
-        XCTAssertFalse(viewModel.isLoading)
+        XCTAssertEqual(viewModel.viewState.username, username)
     }
 
-    func testLoginWithBiometricSuccess() {
-        loginModelMock.loginWithBiometric = true
-        let navigateExpectation = expectation(description: "Navigation success")
-        navigationViewModelMock.navigateExpectation = navigateExpectation
+    func testLoginSuccess() async {
+        loginUseCaseMock.loginResult = true
 
-        waitForFinishedTask { viewModel in
-            viewModel.isLoading = true
-            viewModel.loginWithBiometric(
-                username: self.username,
-                navigationViewModel: self.navigationViewModelMock
-            )
-        }
+        viewModel.viewState.username = username
+        viewModel.viewState.passwordViewState.password = password
 
-        wait(for: [navigateExpectation])
-        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, LoginNavigationRoute.onLogged)
-        XCTAssertFalse(viewModel.isLoading)
+        await viewModel.didTapLogin()
+
+        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, .onLogged)
+        XCTAssertNil(viewModel.viewState.alertError)
+        XCTAssertFalse(viewModel.viewState.showError)
     }
 
-    func testLoginWithBiometricDenied() {
-        loginModelMock.loginWithBiometric = false
-        let navigateExpectation = expectation(description: "Navigation called")
-        navigateExpectation.isInverted = true
-        navigationViewModelMock.navigateExpectation = navigateExpectation
+    func testLoginDenied() async {
+        loginUseCaseMock.loginResult = false
 
-        waitForFinishedTask { viewModel in
-            viewModel.isLoading = true
-            viewModel.loginWithBiometric(
-                username: self.username,
-                navigationViewModel: self.navigationViewModelMock
-            )
-        }
+        viewModel.viewState.username = username
+        viewModel.viewState.passwordViewState.password = password
 
-        wait(for: [navigateExpectation], timeout: 0.1)
-        XCTAssertFalse(viewModel.isLoading)
+        await viewModel.didTapLogin()
+
+        XCTAssertNil(navigationViewModelMock.navigateRoute)
+        XCTAssertEqual(viewModel.viewState.alertError, .invalidPassword)
+        XCTAssertTrue(viewModel.viewState.showError)
+    }
+
+    func testLoginWithBiometricSuccess() async {
+        loginUseCaseMock.loginWithBiometric = true
+
+        viewModel.viewState.username = username
+
+        await viewModel.loginWithBiometric()
+
+        XCTAssertEqual(navigationViewModelMock.navigateRoute as? LoginNavigationRoute, .onLogged)
+        XCTAssertNil(viewModel.viewState.alertError)
+        XCTAssertFalse(viewModel.viewState.showError)
+    }
+
+    func testLoginWithBiometricDenied() async {
+        loginUseCaseMock.loginWithBiometric = false
+
+        viewModel.viewState.username = username
+
+        await viewModel.loginWithBiometric()
+
+        XCTAssertNil(navigationViewModelMock.navigateRoute)
+        XCTAssertNil(viewModel.viewState.alertError)
+        XCTAssertFalse(viewModel.viewState.showError)
     }
 }

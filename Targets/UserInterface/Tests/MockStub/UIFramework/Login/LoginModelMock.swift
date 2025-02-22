@@ -9,7 +9,7 @@
 import Foundation
 @testable import UserInterface
 
-class LoginModelMock: LoginModel {
+class LoginUseCaseMock: LoginUseCase {
     var loginResult = true
     var loginWithBiometric = true
 

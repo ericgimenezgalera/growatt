@@ -49,7 +49,8 @@ struct ContentView: View {
     }
 
     func generateLoginView() -> some View {
-        return LoginView(navigationModel)
+        let viewModel = LoginViewModel(navigationViewModel: navigationModel)
+        return LoginView(viewState: viewModel.viewState)
     }
 
     func generateMenuView() -> some View {

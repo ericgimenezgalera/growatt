@@ -11,18 +11,14 @@ import Foundation
 
 class LoginViewModelMock: LoginViewModel {
     var loginCalled: Bool = false
-    var loginParameters: (String, String, NavigationViewModel)?
 
     var loginWithBiometricCalled: Bool = false
-    var loginWithBiometricParameters: (String, NavigationViewModel)?
 
-    override func login(username: String, password: String, navigationViewModel: NavigationViewModel) {
+    override func didTapLogin() async {
         loginCalled = true
-        loginParameters = (username, password, navigationViewModel)
     }
 
-    override func loginWithBiometric(username: String, navigationViewModel: NavigationViewModel) {
+    override func loginWithBiometric() async {
         loginWithBiometricCalled = true
-        loginWithBiometricParameters = (username, navigationViewModel)
     }
 }

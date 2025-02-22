@@ -5,95 +5,67 @@
 //  Created by Eric Gimènez Galera on 13/10/23.
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
-
-import DependencyInjection
 import Foundation
+import SnapshotTesting
 import SwiftUI
 @testable import UserInterface
-import ViewInspector
 import XCTest
 
-final class LoginViewTests: BaseViewTest<LoginView> {
+final class LoginViewTests: XCTestCase {
     let fakeUsername = "FakeUsername"
     let fakePassword = "FakePassword"
-
-    var navigationViewModel: NavigationViewModelMock!
-    var loginViewModelMock: LoginViewModelMock!
+    var view: LoginView!
+    var viewState: LoginView.ViewState!
 
     override func setUp() {
-        navigationViewModel = NavigationViewModelMock()
-        loginViewModelMock = LoginViewModelMock()
-        view = LoginView(navigationViewModel, viewModel: loginViewModelMock)
-        UserDefaults.standard.removeObject(forKey: usernameUserDefaultsKey)
+        viewState = .init(
+            username: "",
+            loginViewState: .init(),
+            passwordViewState: .init(passwordVisibilityViewState: .init())
+        )
+
+        view = .init(viewState: viewState)
     }
 
-    func testFreshInstallInitialState() throws {
-        onAppearView { view in
-            XCTAssertTrue(self.loginViewModelMock.loginWithBiometricCalled)
-            XCTAssertEqual(self.loginViewModelMock.loginWithBiometricParameters?.0, "")
-            XCTAssertTrue(self.loginViewModelMock.isLoading)
-            XCTAssertFalse(try view.find(viewWithId: LoginConstants.spinnerViewId).isHidden())
-        }
+    func testFreshInstallInitialState() {
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
     }
 
-    func testWithUsernameInitialState() throws {
-        UserDefaults.standard.setValue(fakeUsername, forKey: usernameUserDefaultsKey)
-
-        onAppearView { view in
-            XCTAssertTrue(self.loginViewModelMock.loginWithBiometricCalled)
-            XCTAssertEqual(self.loginViewModelMock.loginWithBiometricParameters?.0, self.fakeUsername)
-            XCTAssertTrue(self.loginViewModelMock.isLoading)
-            XCTAssertFalse(try view.find(viewWithId: LoginConstants.spinnerViewId).isHidden())
-        }
+    func testWithUsernameState() {
+        viewState.username = fakeUsername
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
     }
 
-    func testEyeButton() throws {
-        onAppearView { view in
-            self.loginViewModelMock.isLoading = false
-
-            _ = try view.find(viewWithId: LoginConstants.passwordSecureFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordTextFieldId))
-
-            try view.find(viewWithId: LoginConstants.eyeButtonId).button().tap()
-
-            _ = try view.find(viewWithId: LoginConstants.passwordTextFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordSecureFieldId))
-
-            try view.find(viewWithId: LoginConstants.eyeButtonId).button().tap()
-
-            _ = try view.find(viewWithId: LoginConstants.passwordSecureFieldId)
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.passwordTextFieldId))
-        }
+    func testWithHidePassword() {
+        viewState.passwordViewState.password = fakePassword
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
     }
 
-    func testLoginWithUserNameAndPassword() throws {
-        onAppearView { view in
-            self.loginViewModelMock.isLoading = false
-
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.signinButtonId).button().tap())
-            try view.find(viewWithId: LoginConstants.usernameTextFieldId).textField().setInput(self.fakeUsername)
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.signinButtonId).button().tap())
-            try view.find(viewWithId: LoginConstants.passwordSecureFieldId).secureField().setInput(self.fakePassword)
-            XCTAssertFalse(self.loginViewModelMock.loginCalled)
-
-            try view.find(viewWithId: LoginConstants.signinButtonId).button().tap()
-
-            XCTAssertTrue(self.loginViewModelMock.loginCalled)
-            XCTAssertEqual(self.loginViewModelMock.loginParameters?.0, self.fakeUsername)
-            XCTAssertEqual(self.loginViewModelMock.loginParameters?.1, self.fakePassword)
-        }
+    func testWithShowedPassword() {
+        viewState.passwordViewState.password = fakePassword
+        viewState.passwordViewState.showPassword = true
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
     }
 
-    func testSpinner() throws {
-        onAppearView { view in
-            XCTAssertTrue(self.loginViewModelMock.isLoading)
-            _ = try view.find(viewWithId: LoginConstants.spinnerViewId)
+    func testWithUsernameAndPassword() {
+        viewState.username = fakeUsername
+        viewState.passwordViewState.password = fakePassword
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
+    }
 
-            self.loginViewModelMock.isLoading = false
-            XCTAssertThrowsError(try view.find(viewWithId: LoginConstants.spinnerViewId))
+    func testWithLoadingByPasswordVisibility() {
+        viewState.username = fakeUsername
+        viewState.passwordViewState.password = fakePassword
+        viewState.passwordViewState.passwordVisibilityViewState.showProgressView = true
 
-            self.loginViewModelMock.isLoading = true
-            _ = try view.find(viewWithId: LoginConstants.spinnerViewId)
-        }
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
+    }
+
+    func testWithLoadingByLoginTapped() {
+        viewState.username = fakeUsername
+        viewState.passwordViewState.password = fakePassword
+        viewState.loginViewState.showProgressView = true
+
+        assertNamedSnapshot(matching: view, size: .init(width: 300, height: 500))
     }
 }

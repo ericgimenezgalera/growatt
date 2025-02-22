@@ -9,13 +9,13 @@
 import DependencyInjection
 import Foundation
 
-private struct LoginModelKey: InjectionKey {
-    static var currentValue: LoginModel = LoginModelImpl()
+private struct LoginUseCaseKey: InjectionKey {
+    static var currentValue: LoginUseCase = LoginUseCaseImpl()
 }
 
 extension InjectedValues {
-    var loginModel: LoginModel {
-        get { Self[LoginModelKey.self] }
-        set { Self[LoginModelKey.self] = newValue }
+    var loginUseCase: LoginUseCase {
+        get { Self[LoginUseCaseKey.self] }
+        set { Self[LoginUseCaseKey.self] = newValue }
     }
 }

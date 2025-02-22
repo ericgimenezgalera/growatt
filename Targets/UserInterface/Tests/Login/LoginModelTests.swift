@@ -7,14 +7,14 @@ import XCTest
 final class LoginModelTests: XCTestCase {
     let username = "fakeUsername"
     let password = "fakePassword"
-    var loginModel: LoginModelImpl!
+    var loginModel: LoginUseCaseImpl!
     var authorizationServiceMock: AuthorizationServiceMock!
     var keychainWrapperMock: KeychainWrapperMock!
     var laContextMock: LAContextStub!
 
     override func setUp() {
         laContextMock = LAContextStub()
-        loginModel = LoginModelImpl()
+        loginModel = LoginUseCaseImpl()
         loginModel.context = laContextMock
         authorizationServiceMock = AuthorizationServiceMock()
         keychainWrapperMock = KeychainWrapperMock()

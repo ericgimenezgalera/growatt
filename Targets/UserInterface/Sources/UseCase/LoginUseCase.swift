@@ -1,5 +1,5 @@
 //
-//  LoginModel.swift
+//  LoginUseCase.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 13/9/23.
@@ -12,12 +12,12 @@ import Foundation
 import KeychainWrapper
 import LocalAuthentication
 
-protocol LoginModel {
+protocol LoginUseCase {
     func login(username: String, password: String) async -> Bool
     func loginWithBiometric(username: String) async -> Bool
 }
 
-class LoginModelImpl: LoginModel {
+class LoginUseCaseImpl: LoginUseCase {
     @Injected(\.authorizationService) var authorizationService: AuthorizationService
     @Injected(\.keychainWrapper) var keychainWrapper: KeychainWrapper
     var context = LAContext()
