@@ -4,7 +4,7 @@ import Foundation
 @testable import UserInterface
 import XCTest
 
-final class LoginModelTests: XCTestCase {
+final class LoginUseCaseTests: XCTestCase {
     let username = "fakeUsername"
     let password = "fakePassword"
     var loginModel: LoginUseCaseImpl!
@@ -23,91 +23,76 @@ final class LoginModelTests: XCTestCase {
     }
 
     func testLoginSuccess() async {
-        authorizationServiceMock.success = true
-
         let loginResult = await loginModel.login(username: username, password: password)
 
         XCTAssertTrue(loginResult)
-        XCTAssertEqual(
-            authorizationServiceMock.authentication,
-            AuthenticationRequest(account: username, password: password)
-        )
-        XCTAssertEqual(
-            try? keychainWrapperMock.get(account: passwordKeychainAccount),
-            password
-        )
+        XCTAssertTrue(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
+        XCTAssertEqual(try? keychainWrapperMock.get(account: passwordKeychainAccount), password)
     }
 
     func testLoginDenied() async {
-        authorizationServiceMock.success = false
+        authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidThrowableError = NSError(domain: "Error", code: -1)
 
         let loginResult = await loginModel.login(username: username, password: password)
 
         XCTAssertFalse(loginResult)
+        XCTAssertTrue(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
+        XCTAssertNil(try? (keychainWrapperMock.get(account: passwordKeychainAccount) as String?))
     }
 
     func testBiometricSuccess() async {
-        authorizationServiceMock.success = true
         try? keychainWrapperMock.set(value: password, account: passwordKeychainAccount)
 
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertTrue(loginResult)
-        XCTAssertEqual(
-            authorizationServiceMock.authentication,
-            AuthenticationRequest(account: username, password: password)
-        )
+        XCTAssertTrue(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
+        XCTAssertEqual(try? keychainWrapperMock.get(account: passwordKeychainAccount), password)
     }
 
     func testBiometricFailsReasonNoStoredPassword() async {
-        authorizationServiceMock.success = true
-
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertFalse(loginResult)
-        XCTAssertNil(authorizationServiceMock.authentication)
+        XCTAssertFalse(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
     }
 
     func testBiometricFailsReasonEmptyUsername() async {
-        authorizationServiceMock.success = true
         try? keychainWrapperMock.set(value: password, account: passwordKeychainAccount)
 
         let loginResult = await loginModel.loginWithBiometric(username: "")
 
         XCTAssertFalse(loginResult)
-        XCTAssertNil(authorizationServiceMock.authentication)
+        XCTAssertFalse(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
     }
 
     func testBiometricFailsDeviceWithoutBiometric() async {
-        authorizationServiceMock.success = true
         try? keychainWrapperMock.set(value: password, account: passwordKeychainAccount)
         laContextMock.canEvaluatePolicyResult = false
 
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertFalse(loginResult)
-        XCTAssertNil(authorizationServiceMock.authentication)
+        XCTAssertFalse(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
     }
 
     func testBiometricFailsBiometricFails() async {
-        authorizationServiceMock.success = true
         try? keychainWrapperMock.set(value: password, account: passwordKeychainAccount)
         laContextMock.evaluatePolicy = false
 
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertFalse(loginResult)
-        XCTAssertNil(authorizationServiceMock.authentication)
+        XCTAssertFalse(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
     }
 
     func testBiometricFailsBiometricThrowError() async {
-        authorizationServiceMock.success = true
         try? keychainWrapperMock.set(value: password, account: passwordKeychainAccount)
         laContextMock.evaluateThowError = true
 
         let loginResult = await loginModel.loginWithBiometric(username: username)
 
         XCTAssertFalse(loginResult)
-        XCTAssertNil(authorizationServiceMock.authentication)
+        XCTAssertFalse(authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidCalled)
     }
 }

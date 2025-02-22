@@ -12,6 +12,7 @@ import Foundation
 import KeychainWrapper
 import LocalAuthentication
 
+// sourcery: AutoMockable
 protocol LoginUseCase {
     func login(username: String, password: String) async -> Bool
     func loginWithBiometric(username: String) async -> Bool

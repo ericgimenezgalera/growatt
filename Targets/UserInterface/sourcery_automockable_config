@@ -1,0 +1,10 @@
+sources:
+  - ../../Targets/UserInterface/Sources
+  - ../../Targets/API/Sources
+templates:
+  - ../../Sourcery/AutoMockable.stencil
+output:
+  ../../Targets/UserInterface/Tests/Codegen/Sourcery
+args:
+  autoMockableTestableImports: ["UserInterface"]
+  autoMockableImports: ["API"]

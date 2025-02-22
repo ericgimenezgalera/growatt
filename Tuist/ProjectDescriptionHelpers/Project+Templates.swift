@@ -98,7 +98,17 @@ extension Project {
     private static func getCommonPreScripts(_ targetName: String) -> [TargetScript] {
         [
             .pre(script: swiftFormatScript, name: "Swift format", outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SwiftformatOutput"]),
-            .pre(script: swiftlintScript, name: "Swiftlint", outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SwiftlintOutput"])
+            .pre(script: swiftlintScript, name: "Swiftlint", outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SwiftlintOutput"]),
+            .pre(script: Self.getSourceryScript(targetName), name: "Sourcery",  outputPaths: ["$(DERIVED_FILE_DIR)/\(targetName)SourceryOutput"])
         ]
+    }
+
+    private static func getSourceryScript(_ targetName: String) -> String {
+        """
+        export PATH="$PATH:/opt/homebrew/bin"
+        if [ -f "$SRCROOT/Targets/\(targetName)/sourcery_automockable_config" ]; then
+            sourcery --config "$SRCROOT/Targets/\(targetName)/sourcery_automockable_config"
+        fi
+        """
     }
 }

@@ -8,6 +8,7 @@
 
 import Foundation
 
+// sourcery: AutoMockable
 public protocol AuthorizationService {
     func authorise(authentication: AuthenticationRequest) async throws
 }

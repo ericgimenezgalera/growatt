@@ -35,7 +35,7 @@ final class LoginViewModelTests: XCTestCase {
     }
 
     func testLoginSuccess() async {
-        loginUseCaseMock.loginResult = true
+        loginUseCaseMock.loginUsernameStringPasswordStringBoolReturnValue = true
 
         viewModel.viewState.username = username
         viewModel.viewState.passwordViewState.password = password
@@ -48,7 +48,7 @@ final class LoginViewModelTests: XCTestCase {
     }
 
     func testLoginDenied() async {
-        loginUseCaseMock.loginResult = false
+        loginUseCaseMock.loginUsernameStringPasswordStringBoolReturnValue = false
 
         viewModel.viewState.username = username
         viewModel.viewState.passwordViewState.password = password
@@ -61,7 +61,7 @@ final class LoginViewModelTests: XCTestCase {
     }
 
     func testLoginWithBiometricSuccess() async {
-        loginUseCaseMock.loginWithBiometric = true
+        loginUseCaseMock.loginWithBiometricUsernameStringBoolReturnValue = true
 
         viewModel.viewState.username = username
 
@@ -73,7 +73,7 @@ final class LoginViewModelTests: XCTestCase {
     }
 
     func testLoginWithBiometricDenied() async {
-        loginUseCaseMock.loginWithBiometric = false
+        loginUseCaseMock.loginWithBiometricUsernameStringBoolReturnValue = false
 
         viewModel.viewState.username = username
 

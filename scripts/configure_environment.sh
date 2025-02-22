@@ -34,4 +34,5 @@ install_brew_if_not_exist
 install_brew_command_if_not_exist swiftlint
 install_brew_command_if_not_exist swiftformat
 install_brew_command_if_not_exist carthage
+install_brew_command_if_not_exist sourcery
 install_tuist_if_not_exist
