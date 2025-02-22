@@ -9,36 +9,45 @@
 import API
 import DependencyInjection
 import Foundation
+import SwiftUI
 
-class SettingsViewModel: ViewModel {
-    @Injected(\.settingsModel) private var settingsModel: SettingsModel
-    @Published var plantDetails: PlantDetails?
+public class SettingsViewModel: SettingsView.Output {
+    @Injected(\.logoutUseCase) private var logoutUseCase: LogoutUseCase
+    @Injected(\.getPlantDetailsUseCase) private var getPlantDetailsUseCase: GetPlantDetailsUseCase
+    @AppStorage(usernameUserDefaultsKey) var username: String = ""
 
-    func logout(navigationViewModel: NavigationViewModel) {
-        let task = Task<Void, Never>.detached(priority: .background) { [weak self] in
-            self?.settingsModel.logout()
+    let navigationViewModel: NavigationViewModel
+    public let viewState: SettingsView.ViewState
 
-            await navigationViewModel.navigate(route: SettingsNavigationRoute.onLogout)
+    public init(navigationViewModel: NavigationViewModel) {
+        self.navigationViewModel = navigationViewModel
+        viewState = .init(
+            username: "",
+            logoutViewState: .init(buttonId: SettingsConstants.logoutId)
+        )
+        viewState.output = self
+        viewState.logoutViewState.action = { [weak self] in
+            await self?.logout()
         }
-        tasks.append(task)
+        viewState.username = username
     }
 
-    func getPlantData() {
-        guard plantDetails == nil else {
+    func onAppear() async {
+        guard viewState.plantDetails == nil, let plantDetails = await getPlantDetailsUseCase.getPlantData() else {
             return
         }
 
-        let task = Task<Void, Never>.detached(priority: .background) { [weak self] in
-            guard let plantDetails = await self?.settingsModel.getPlantData() else {
-                return
-            }
-
-            await self?.publishPlantDetails(plantDetails)
-        }
-        tasks.append(task)
+        await publishPlantDetails(plantDetails)
     }
 
-    @MainActor func publishPlantDetails(_ plantDetails: PlantDetails) {
-        self.plantDetails = plantDetails
+    func logout() async {
+        logoutUseCase.logout()
+
+        await navigationViewModel.navigate(route: SettingsNavigationRoute.onLogout)
+    }
+
+    @MainActor
+    func publishPlantDetails(_ plantDetails: PlantDetails) async {
+        viewState.plantDetails = plantDetails
     }
 }

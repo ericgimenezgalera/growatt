@@ -6,29 +6,43 @@
 //  Copyright © 2023 eric.gimenez.galera. All rights reserved.
 //
 
+import API
 import Foundation
 import SwiftUI
 
-public struct SettingsView: BaseView {
-    @AppStorage(usernameUserDefaultsKey) var username: String = ""
-    @StateObject private var viewModel: SettingsViewModel
-    var navigationViewModel: NavigationViewModel
-    var didAppear: ((SettingsView) -> Void)?
+public struct SettingsView: View {
+    public class ViewState: ObservableObject {
+        @Published var username: String
+        @Published var plantDetails: PlantDetails?
+        let logoutViewState: AsyncButtonViewState
+        var output: Output?
 
-    public init(_ navigationViewModel: NavigationViewModel) {
-        self.init(navigationViewModel, viewModel: SettingsViewModel())
+        init(
+            username: String,
+            logoutViewState: AsyncButtonViewState
+        ) {
+            self.username = username
+            self.logoutViewState = logoutViewState
+        }
     }
 
-    init(_ navigationViewModel: NavigationViewModel, viewModel: SettingsViewModel) {
-        self.navigationViewModel = navigationViewModel
-        _viewModel = StateObject(wrappedValue: viewModel)
+    protocol Output: AnyObject {
+        func onAppear() async
+    }
+
+    @ObservedObject var viewState: ViewState
+    @ObservedObject var logoutViewState: AsyncButtonViewState
+
+    public init(viewState: ViewState) {
+        self.viewState = viewState
+        logoutViewState = viewState.logoutViewState
     }
 
     public var body: some View {
         NavigationView {
             Form {
                 profileView()
-                if let plantDetails = viewModel.plantDetails {
+                if let plantDetails = viewState.plantDetails {
                     Section(header: Text("PLANT DETAILS"), content: {
                         HStack {
                             LabeledContent("Name", value: plantDetails.name)
@@ -68,9 +82,17 @@ public struct SettingsView: BaseView {
                 }
             }
         }.onAppear {
-            viewModel.getPlantData()
-            didAppear?(self)
-        }
+            await viewState.output?.onAppear()
+        }.overlay(Group {
+            if viewState.logoutViewState.showProgressView {
+                ZStack {
+                    Color(white: 0, opacity: 0.75)
+                    ProgressView().tint(.white)
+                }
+                .ignoresSafeArea()
+                .id(LoginConstants.spinnerViewId)
+            }
+        })
     }
 
     func profileView() -> some View {
@@ -81,13 +103,11 @@ public struct SettingsView: BaseView {
                     Image(systemName: "person.fill")
                         .resizable()
                         .frame(width: 100, height: 100, alignment: .center)
-                    Text(username)
+                    Text(viewState.username)
                         .font(.title)
                         .id(SettingsConstants.usernameId)
                     Spacer()
-                    Button(action: {
-                        viewModel.logout(navigationViewModel: navigationViewModel)
-                    }, label: {
+                    AsyncButton(viewState: viewState.logoutViewState, label: {
                         Text("Logout")
                             .frame(minWidth: 0, maxWidth: .infinity)
                             .font(.system(size: 18))
@@ -100,16 +120,30 @@ public struct SettingsView: BaseView {
                     })
                     .background(Color.red)
                     .cornerRadius(25)
-                    .id(SettingsConstants.logoutId)
                 }
                 Spacer()
             }
+            .padding(.vertical)
         }
     }
 }
 
-struct Settings_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsView(MockNavigationViewModel())
-    }
+#Preview {
+    let viewState = SettingsView.ViewState(
+        username: "Test User",
+        logoutViewState: .init()
+    )
+
+    viewState.plantDetails = .init(
+        name: "Test plant",
+        power: 9999,
+        datalogType: "Fake type",
+        datalogSerialNumber: "fake S/N",
+        inverterModel: "Fake inverter model",
+        inverterSerialNumber: "Fake inverter serial number"
+    )
+
+//    viewState.logoutViewState.showProgressView = true
+
+    return SettingsView(viewState: viewState)
 }

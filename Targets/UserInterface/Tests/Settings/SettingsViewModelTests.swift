@@ -3,58 +3,62 @@ import DependencyInjection
 import Foundation
 @testable import UserInterface
 import XCTest
+import API
 
-final class SettingsViewModelTests: BaseViewModelTest<SettingsViewModel> {
-    var settingsModelMock: SettingsModelMock!
+final class SettingsViewModelTests: XCTestCase {
     var navigationViewModelMock: NavigationViewModelMock!
+    var viewModel: SettingsViewModel!
+    var logoutUsecaseMock: LogoutUseCaseMock!
+    var getPlantDetailsUseCaseMock: GetPlantDetailsUseCaseMock!
+    let fakePlantDetails = PlantDetails.makeStub()
 
     override func setUp() {
-        viewModel = SettingsViewModel()
-        settingsModelMock = SettingsModelMock()
         navigationViewModelMock = NavigationViewModelMock()
-        InjectedValues[\.settingsModel] = settingsModelMock
+        viewModel = SettingsViewModel(navigationViewModel: navigationViewModelMock)
+        logoutUsecaseMock = .init()
+        getPlantDetailsUseCaseMock = .init()
+        InjectedValues[\.logoutUseCase] = logoutUsecaseMock
+        InjectedValues[\.getPlantDetailsUseCase] = getPlantDetailsUseCaseMock
     }
 
-    func testLogout() {
-        let navigateExpectation = expectation(description: "Navigation success")
-        navigationViewModelMock.navigateExpectation = navigateExpectation
+    func testOnLogout() async {
+        await viewModel.logout()
 
-        waitForFinishedTask { viewModel in
-            viewModel.logout(navigationViewModel: self.navigationViewModelMock)
-        }
-
-        wait(for: [navigateExpectation])
-        XCTAssertEqual(
-            navigationViewModelMock.navigateRoute as? SettingsNavigationRoute,
-            SettingsNavigationRoute.onLogout
-        )
+        XCTAssertTrue(logoutUsecaseMock.logoutVoidCalled)
+        XCTAssertEqual(navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? SettingsNavigationRoute, .onLogout)
     }
 
     func testGetPlantDataSuccess() async {
-        waitForFinishedTask { $0.getPlantData() }
+        getPlantDetailsUseCaseMock.getPlantDataPlantDetailsReturnValue = fakePlantDetails
 
-        XCTAssertEqual(viewModel.plantDetails, settingsModelMock.getPlantDataResult)
+        await viewModel.onAppear()
+
+        XCTAssertTrue(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCalled)
+        XCTAssertEqual(viewModel.viewState.plantDetails, fakePlantDetails)
     }
 
     func testGetPlantDataFailed() async {
-        settingsModelMock.getPlantDataResult = nil
+        getPlantDetailsUseCaseMock.getPlantDataPlantDetailsReturnValue = nil
 
-        waitForFinishedTask { $0.getPlantData() }
+        await viewModel.onAppear()
 
-        XCTAssertNil(viewModel.plantDetails)
+        XCTAssertTrue(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCalled)
+        XCTAssertNil(viewModel.viewState.plantDetails)
     }
 
     func testGetPlantNotReloadInformationWhenCalledAgain() async {
-        let expectedPlantDetails = settingsModelMock.getPlantDataResult
+        getPlantDetailsUseCaseMock.getPlantDataPlantDetailsReturnValue = fakePlantDetails
 
-        waitForFinishedTask { $0.getPlantData() }
+        await viewModel.onAppear()
 
-        XCTAssertEqual(viewModel.plantDetails, expectedPlantDetails)
+        XCTAssertTrue(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCalled)
+        XCTAssertEqual(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCallsCount, 1)
+        XCTAssertEqual(viewModel.viewState.plantDetails, fakePlantDetails)
 
-        settingsModelMock.getPlantDataResult = nil
+        await viewModel.onAppear()
 
-        waitForFinishedTask { $0.getPlantData() }
-
-        XCTAssertEqual(viewModel.plantDetails, expectedPlantDetails)
+        XCTAssertTrue(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCalled)
+        XCTAssertEqual(getPlantDetailsUseCaseMock.getPlantDataPlantDetailsCallsCount, 1)
+        XCTAssertEqual(viewModel.viewState.plantDetails, fakePlantDetails)
     }
 }

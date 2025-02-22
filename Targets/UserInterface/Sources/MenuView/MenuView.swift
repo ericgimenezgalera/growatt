@@ -10,10 +10,20 @@ import Foundation
 import SwiftUI
 
 public struct MenuView: View {
+    public class ViewState: ObservableObject {
+        let settingsViewState: SettingsView.ViewState
+
+        public init(settingsViewState: SettingsView.ViewState) {
+            self.settingsViewState = settingsViewState
+        }
+    }
+
+    @ObservedObject var viewState: ViewState
     var navigationViewModel: NavigationViewModel
 
-    public init(_ navigationViewModel: NavigationViewModel) {
+    public init(viewState: ViewState, navigationViewModel: NavigationViewModel) {
         self.navigationViewModel = navigationViewModel
+        self.viewState = viewState
     }
 
     public var body: some View {
@@ -22,7 +32,7 @@ public struct MenuView: View {
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
-            SettingsView(navigationViewModel)
+            SettingsView(viewState: viewState.settingsViewState)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
                 }
@@ -30,8 +40,12 @@ public struct MenuView: View {
     }
 }
 
-struct MenuView_Previews: PreviewProvider {
-    static var previews: some View {
-        MenuView(MockNavigationViewModel())
-    }
+#Preview {
+    let viewState = MenuView.ViewState(
+        settingsViewState: .init(
+            username: "Test User",
+            logoutViewState: .init()
+        )
+    )
+    MenuView(viewState: viewState, navigationViewModel: MockNavigationViewModel())
 }

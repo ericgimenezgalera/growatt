@@ -37,18 +37,18 @@ public struct LoginView: View {
     @ObservedObject var passwordViewState: PasswordField.ViewState
     @ObservedObject var loginViewState: AsyncButtonViewState
 
+    public init(viewState: ViewState) {
+        self.viewState = viewState
+        passwordViewState = viewState.passwordViewState
+        loginViewState = viewState.loginViewState
+    }
+
     var showLoading: Bool {
         viewState.loginViewState.showProgressView || passwordViewState.passwordVisibilityViewState.showProgressView
     }
 
     var disabledLoginButton: Bool {
         viewState.username.isEmpty || passwordViewState.password.isEmpty
-    }
-
-    public init(viewState: ViewState) {
-        self.viewState = viewState
-        passwordViewState = viewState.passwordViewState
-        loginViewState = viewState.loginViewState
     }
 
     public var body: some View {

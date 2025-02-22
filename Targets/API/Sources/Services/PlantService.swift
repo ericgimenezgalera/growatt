@@ -14,6 +14,7 @@ public enum PlantServiceError: Error {
     case noPlanDetails
 }
 
+// sourcery: AutoMockable
 public protocol PlantService {
     func plantList() async throws -> PlantDetails
     func socialContribution() async throws -> SocialContribution

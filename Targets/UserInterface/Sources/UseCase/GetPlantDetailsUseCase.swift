@@ -1,5 +1,5 @@
 //
-//  SettingsModel.swift
+//  GetPlantDetailsUseCase.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 13/9/23.
@@ -10,24 +10,15 @@ import API
 import DependencyInjection
 import Foundation
 
-protocol SettingsModel {
-    func logout()
+// sourcery: AutoMockable
+protocol GetPlantDetailsUseCase {
     func getPlantData() async -> PlantDetails?
 }
 
-class SettingsModelImpl: SettingsModel {
-    @Injected(\.sessionManager) var sessionManager: SessionManager
+class GetPlantDetailsUseCaseImpl: GetPlantDetailsUseCase {
     @Injected(\.plantService) var plantService: PlantService
 
-    func logout() {
-        sessionManager.logout()
-    }
-
     func getPlantData() async -> PlantDetails? {
-        do {
-            return try await plantService.plantList()
-        } catch {
-            return nil
-        }
+        try? await plantService.plantList()
     }
 }

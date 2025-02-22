@@ -54,7 +54,9 @@ struct ContentView: View {
     }
 
     func generateMenuView() -> some View {
-        MenuView(navigationModel).navigationBarBackButtonHidden()
+        let settingsViewState = SettingsViewModel(navigationViewModel: navigationModel)
+        let viewState = MenuView.ViewState(settingsViewState: settingsViewState.viewState)
+        return MenuView(viewState: viewState, navigationViewModel: navigationModel).navigationBarBackButtonHidden()
     }
 }
 

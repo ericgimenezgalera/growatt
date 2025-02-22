@@ -8,6 +8,7 @@
 
 import Foundation
 
+// sourcery: AutoMockable
 public protocol SessionManager {
     func logout()
 }

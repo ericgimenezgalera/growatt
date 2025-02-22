@@ -9,6 +9,7 @@
 import Foundation
 import SwiftUI
 
+// sourcery: AutoMockable
 public protocol NavigationViewModel {
     func navigate(route: any Hashable) async
 }

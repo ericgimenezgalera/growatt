@@ -1,5 +1,5 @@
 //
-//  DILoginModel.swift
+//  DILoginUseCase.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 14/9/23.

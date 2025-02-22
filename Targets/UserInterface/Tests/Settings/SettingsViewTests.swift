@@ -14,63 +14,34 @@ import SwiftUI
 import ViewInspector
 import XCTest
 
-final class SettingsViewTests: BaseViewTest<SettingsView> {
+final class SettingsViewTests: XCTestCase {
     let fakeUsername = "fake username"
-    var navigationViewModel: NavigationViewModelMock!
-    var settingsViewModelMock: SettingsViewModelMock!
+    let fakePlantDetails = PlantDetails.makeStub()
+    var view: SettingsView!
+    var viewState: SettingsView.ViewState!
 
     override func setUp() {
-        navigationViewModel = NavigationViewModelMock()
-        settingsViewModelMock = SettingsViewModelMock()
-        view = SettingsView(navigationViewModel, viewModel: settingsViewModelMock)
-        UserDefaults.standard.setValue(fakeUsername, forKey: usernameUserDefaultsKey)
+        viewState = .init(
+            username: "",
+            logoutViewState: .init()
+        )
+
+        view = .init(viewState: viewState)
     }
 
-    func testInitialState() throws {
-        onAppearView { view in
-            XCTAssertTrue(self.settingsViewModelMock.getPlantDataCalled)
-            let username = try view.find(viewWithId: SettingsConstants.usernameId).text().string()
-            _ = try view.find(viewWithId: SettingsConstants.sipnnerId)
-
-            XCTAssertEqual(username, self.fakeUsername)
-        }
+    func testInitialState() {
+        assertNamedSnapshot(matching: view, size: .init(width: 350, height: 400))
     }
 
-    func testLogout() throws {
-        onAppearView { view in
-            XCTAssertFalse(self.settingsViewModelMock.logoutCalled)
-            try view.find(viewWithId: SettingsConstants.logoutId).button().tap()
-            XCTAssertTrue(self.settingsViewModelMock.logoutCalled)
-        }
+    func testWithPlantDetails() {
+        viewState.plantDetails = fakePlantDetails
+        assertNamedSnapshot(matching: view, size: .init(width: 350, height: 750))
     }
 
-    func testPlantData() throws {
-        let plantDetails = PlantDetails.makeStub()
-        settingsViewModelMock.plantDetails = plantDetails
-        onAppearView { view in
-            XCTAssertThrowsError(try view.find(viewWithId: SettingsConstants.sipnnerId))
-            let plantName = try view.find(viewWithId: SettingsConstants.plantNameId).labeledContent().text(0).string()
-            let plantPowerId = try view.find(viewWithId: SettingsConstants.plantPowerId).labeledContent().text(0)
-                .string()
+    func testLoadingBylogout() {
+        viewState.plantDetails = fakePlantDetails
+        viewState.logoutViewState.showProgressView = true
 
-            let inverterModel = try view.find(viewWithId: SettingsConstants.inverterModelId).labeledContent().text(0)
-                .string()
-            let inverterSerialNumber = try view.find(viewWithId: SettingsConstants.inverterSerialNumberId)
-                .labeledContent().text(0).string()
-
-            let datalogModel = try view.find(viewWithId: SettingsConstants.datalogModelId).labeledContent().text(0)
-                .string()
-            let datalogSerialNumber = try view.find(viewWithId: SettingsConstants.datalogSerialNumberId)
-                .labeledContent().text(0).string()
-
-            XCTAssertEqual(plantName, plantDetails.name)
-            XCTAssertEqual(plantPowerId, "\(plantDetails.power) W")
-
-            XCTAssertEqual(inverterModel, plantDetails.inverterModel)
-            XCTAssertEqual(inverterSerialNumber, plantDetails.inverterSerialNumber)
-
-            XCTAssertEqual(datalogModel, plantDetails.datalogType)
-            XCTAssertEqual(datalogSerialNumber, plantDetails.datalogSerialNumber)
-        }
+        assertNamedSnapshot(matching: view, size: .init(width: 350, height: 750))
     }
 }
