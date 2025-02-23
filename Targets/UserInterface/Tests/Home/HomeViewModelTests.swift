@@ -1,57 +1,59 @@
+import API
 import Combine
 import DependencyInjection
 import Foundation
 @testable import UserInterface
 import XCTest
 
-final class HomeViewModelTests: BaseViewModelTest<HomeViewModel> {
-    var homeModelMock: HomeModelMock!
-    var homeEnergyProgressViewMock: SwiftUiMultiProgressViewMock!
-    var solarProductionProgressViewMock: SwiftUiMultiProgressViewMock!
+final class HomeViewModelTests: XCTestCase {
+    var productionUseCaseMock: ProductionUseCaseMock!
+    var viewModel: HomeViewModel!
+    let anyCurrentProduction = Production.makeStub()
+    let anySocialContribution = SocialContribution.makeStub()
+    let anyDailyProduction = DailyProduction.makeStub()
 
     @MainActor override func setUp() {
         viewModel = HomeViewModel()
-        homeModelMock = HomeModelMock()
-        homeEnergyProgressViewMock = .init()
-        solarProductionProgressViewMock = .init()
-        InjectedValues[\.homeModel] = homeModelMock
+        productionUseCaseMock = .init()
+        InjectedValues[\.productionUseCase] = productionUseCaseMock
     }
 
     func testLoadProductionData() async {
-        waitForFinishedTask { viewModel in
-            viewModel.loadProductionData(
-                homeEnergyProgressBar: self.homeEnergyProgressViewMock,
-                solarProductionProgressBar: self.solarProductionProgressViewMock
-            )
-        }
+        productionUseCaseMock.loadCurrentProductionProductionReturnValue = anyCurrentProduction
+        productionUseCaseMock.loadDailyProductionDailyProductionReturnValue = anyDailyProduction
+        productionUseCaseMock.loadSocialContributionSocialContributionReturnValue = anySocialContribution
 
-        XCTAssertEqual(viewModel.currentProduction, homeModelMock.loadCurrentProductionResult)
-        XCTAssertEqual(viewModel.socialContribution, homeModelMock.loadSocialContributionResult)
-        let dailyProductionMock = homeModelMock.loadDailyProductionResult
-        let homeEnergyCalls = await homeEnergyProgressViewMock.updatedDataCalls
-        XCTAssertEqual(homeEnergyCalls.count, 2)
-        XCTAssertEqual(homeEnergyCalls[0].0, 0)
+        await viewModel.loadData()
+
+        XCTAssertEqual(viewModel.viewState.currentProduction, anyCurrentProduction)
+        XCTAssertEqual(viewModel.viewState.socialContribution, anySocialContribution)
+
+        let currentSefConsumedPercentage = await viewModel.viewState.homeEnergyProgressBarViewState.progressView
+            .progress(forSection: HomeEnergyStorage.selfConsumed.rawValue)
+        let currentImportedFromGridPercentage = await viewModel.viewState.homeEnergyProgressBarViewState.progressView
+            .progress(forSection: HomeEnergyStorage.importedFromGrid.rawValue)
+
         XCTAssertEqual(
-            homeEnergyCalls[0].1,
-            Float(dailyProductionMock.selfConsumed / dailyProductionMock.totalLocal)
+            currentSefConsumedPercentage,
+            Float(anyDailyProduction.selfConsumed / anyDailyProduction.totalLocal)
         )
-        XCTAssertEqual(homeEnergyCalls[1].0, 1)
         XCTAssertEqual(
-            homeEnergyCalls[1].1,
-            Float(dailyProductionMock.importedFromGrid / dailyProductionMock.totalLocal)
+            currentImportedFromGridPercentage,
+            Float(anyDailyProduction.importedFromGrid / anyDailyProduction.totalLocal)
         )
 
-        let solarProductionCalls = await solarProductionProgressViewMock.updatedDataCalls
-        XCTAssertEqual(solarProductionCalls.count, 2)
-        XCTAssertEqual(solarProductionCalls[0].0, 0)
+        let currentSefConsumedForsolarPercentage = await viewModel.viewState.solarProductionProgressBarViewState
+            .progressView.progress(forSection: SolarProductionStorage.selfConsumed.rawValue)
+        let currentExportedToGridPercentage = await viewModel.viewState.solarProductionProgressBarViewState.progressView
+            .progress(forSection: SolarProductionStorage.exportedToGrid.rawValue)
+
         XCTAssertEqual(
-            solarProductionCalls[0].1,
-            Float(dailyProductionMock.selfConsumed / dailyProductionMock.totalSolar)
+            currentSefConsumedForsolarPercentage,
+            Float(anyDailyProduction.selfConsumed / anyDailyProduction.totalSolar)
         )
-        XCTAssertEqual(solarProductionCalls[1].0, 1)
         XCTAssertEqual(
-            solarProductionCalls[1].1,
-            Float(dailyProductionMock.exportedToGrid / dailyProductionMock.totalSolar)
+            currentExportedToGridPercentage,
+            Float(anyDailyProduction.exportedToGrid / anyDailyProduction.totalSolar)
         )
     }
 }

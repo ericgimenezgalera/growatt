@@ -11,24 +11,31 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
-public struct HomeView: BaseView {
-    @StateObject private var viewModel: HomeViewModel
-    let homeEnergyProgressVar = SwiftUiMultiProgressViewImpl<HomeEnergyStorage>("Home Energy")
-    let solarProductionProgressVar = SwiftUiMultiProgressViewImpl<SolarProductionStorage>("Solar Production")
-    var didAppear: ((HomeView) -> Void)?
-
-    public init() {
-        self.init(viewModel: HomeViewModel())
+public struct HomeView: View {
+    public class ViewState: ObservableObject {
+        @Published var isLoading: Bool = true
+        @Published var currentProduction: Production?
+        @Published var socialContribution: SocialContribution?
+        let homeEnergyProgressBarViewState = FullMultiProgressView<HomeEnergyStorage>.ViewState(title: "Home Energy")
+        let solarProductionProgressBarViewState = FullMultiProgressView<SolarProductionStorage>
+            .ViewState(title: "Solar Production")
+        var output: Output?
     }
 
-    init(viewModel: HomeViewModel) {
-        _viewModel = StateObject(wrappedValue: viewModel)
+    protocol Output: AnyObject {
+        @MainActor func loadData() async
+    }
+
+    @ObservedObject var viewState: ViewState
+
+    public init(viewState: ViewState) {
+        self.viewState = viewState
     }
 
     public var body: some View {
         VStack {
             Form {
-                if let currentProduction = viewModel.currentProduction {
+                if let currentProduction = viewState.currentProduction {
                     Section(header: Text("CURRENT PRODUCTION"), content: {
                         LabeledContent("Solar production", value: "\(currentProduction.totalSolar) W")
                             .id(HomeConstants.totalSolarId)
@@ -41,11 +48,16 @@ public struct HomeView: BaseView {
                     })
                 }
                 Section(header: Text("DAILY PRODUCTION"), content: {
-                    homeEnergyProgressVar.frame(height: 120)
-                    solarProductionProgressVar.frame(height: 120)
+                    SwiftUiMultiProgressViewImpl<HomeEnergyStorage>(viewState: viewState.homeEnergyProgressBarViewState)
+                        .frame(height: 120)
+                    SwiftUiMultiProgressViewImpl<SolarProductionStorage>(
+                        viewState: viewState
+                            .solarProductionProgressBarViewState
+                    )
+                    .frame(height: 120)
                 })
 
-                if let socialContribution = viewModel.socialContribution {
+                if let socialContribution = viewState.socialContribution {
                     Section(header: Text("SOCIAL CONTRIBUTION"), content: {
                         HStack {
                             Spacer()
@@ -65,12 +77,12 @@ public struct HomeView: BaseView {
                     })
                 }
             }.onAppear {
-                loadData()
+                await viewState.output?.loadData()
             }
         }
-        .disabled(viewModel.isLoading)
+        .disabled(viewState.isLoading)
         .overlay(Group {
-            if viewModel.isLoading {
+            if viewState.isLoading {
                 ZStack {
                     Color(white: 0, opacity: 0.75)
                     ProgressView().tint(.white)
@@ -80,25 +92,36 @@ public struct HomeView: BaseView {
             }
         })
         .refreshable {
-            loadData()
+            await viewState.output?.loadData()
         }.id(HomeConstants.formId)
-    }
-
-    private func loadData() {
-        viewModel.loadProductionData(
-            homeEnergyProgressBar: homeEnergyProgressVar,
-            solarProductionProgressBar: solarProductionProgressVar
-        )
-        didAppear?(self)
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-    static var previews: some View {
-        let model = HomeViewModel()
-        model.currentProduction = Production(totalSolar: 1, exportToGrid: 2, importFromGrid: 3, useInLocal: 5)
-        model.socialContribution = SocialContribution(co2: 9999, tree: 12345, coal: 54321)
-        let homeView = HomeView(viewModel: model)
-        return homeView
+#Preview {
+    let viewState = HomeView.ViewState()
+
+    viewState.currentProduction = Production(totalSolar: 1, exportToGrid: 2, importFromGrid: 3, useInLocal: 5)
+    viewState.socialContribution = SocialContribution(co2: 9999, tree: 12345, coal: 54321)
+    Task { @MainActor in
+        await viewState.homeEnergyProgressBarViewState.updateData(
+            section: HomeEnergyStorage.selfConsumed.rawValue,
+            to: 0.3
+        )
+        await viewState.homeEnergyProgressBarViewState.updateData(
+            section: HomeEnergyStorage.importedFromGrid.rawValue,
+            to: 1
+        )
+
+        await viewState.solarProductionProgressBarViewState.updateData(
+            section: HomeEnergyStorage.selfConsumed.rawValue,
+            to: 0.6
+        )
+        await viewState.solarProductionProgressBarViewState.updateData(
+            section: HomeEnergyStorage.importedFromGrid.rawValue,
+            to: 0.4
+        )
     }
+    viewState.isLoading = false
+
+    return HomeView(viewState: viewState)
 }

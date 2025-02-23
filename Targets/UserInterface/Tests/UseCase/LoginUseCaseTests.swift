@@ -31,7 +31,10 @@ final class LoginUseCaseTests: XCTestCase {
     }
 
     func testLoginDenied() async {
-        authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidThrowableError = NSError(domain: "Error", code: -1)
+        authorizationServiceMock.authoriseAuthenticationAuthenticationRequestVoidThrowableError = NSError(
+            domain: "Error",
+            code: -1
+        )
 
         let loginResult = await loginUseCase.login(username: username, password: password)
 

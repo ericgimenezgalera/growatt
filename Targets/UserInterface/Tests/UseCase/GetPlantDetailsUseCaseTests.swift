@@ -24,7 +24,7 @@ final class GetPlantDetailsUseCaseTests: XCTestCase {
         XCTAssertTrue(plantServiceMock.plantListPlantDetailsCalled)
         XCTAssertEqual(plantDetails, fakePlantDetails)
     }
-    
+
     func testGetPlantDetailsFailed() async {
         plantServiceMock.plantListPlantDetailsThrowableError = NSError(domain: "Fake domain", code: -1)
 

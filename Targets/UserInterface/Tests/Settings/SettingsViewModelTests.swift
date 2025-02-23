@@ -1,9 +1,9 @@
+import API
 import Combine
 import DependencyInjection
 import Foundation
 @testable import UserInterface
 import XCTest
-import API
 
 final class SettingsViewModelTests: XCTestCase {
     var navigationViewModelMock: NavigationViewModelMock!
@@ -25,7 +25,10 @@ final class SettingsViewModelTests: XCTestCase {
         await viewModel.logout()
 
         XCTAssertTrue(logoutUsecaseMock.logoutVoidCalled)
-        XCTAssertEqual(navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? SettingsNavigationRoute, .onLogout)
+        XCTAssertEqual(
+            navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? SettingsNavigationRoute,
+            .onLogout
+        )
     }
 
     func testGetPlantDataSuccess() async {

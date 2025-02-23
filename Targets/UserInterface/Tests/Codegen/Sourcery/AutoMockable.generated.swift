@@ -239,6 +239,127 @@ public class PlantServiceMock: PlantService {
 
 
 }
+public class ProductionServiceMock: ProductionService {
+
+    public init() {}
+
+
+
+    //MARK: - currentProduction
+
+    public var currentProductionDatalogSerialNumberStringProductionThrowableError: (any Error)?
+    public var currentProductionDatalogSerialNumberStringProductionCallsCount = 0
+    public var currentProductionDatalogSerialNumberStringProductionCalled: Bool {
+        return currentProductionDatalogSerialNumberStringProductionCallsCount > 0
+    }
+    public var currentProductionDatalogSerialNumberStringProductionReceivedDatalogSerialNumber: (String)?
+    public var currentProductionDatalogSerialNumberStringProductionReceivedInvocations: [(String)] = []
+    public var currentProductionDatalogSerialNumberStringProductionReturnValue: Production!
+    public var currentProductionDatalogSerialNumberStringProductionClosure: ((String) async throws -> Production)?
+
+    public func currentProduction(datalogSerialNumber: String) async throws -> Production {
+        currentProductionDatalogSerialNumberStringProductionCallsCount += 1
+        currentProductionDatalogSerialNumberStringProductionReceivedDatalogSerialNumber = datalogSerialNumber
+        currentProductionDatalogSerialNumberStringProductionReceivedInvocations.append(datalogSerialNumber)
+        if let error = currentProductionDatalogSerialNumberStringProductionThrowableError {
+            throw error
+        }
+        if let currentProductionDatalogSerialNumberStringProductionClosure = currentProductionDatalogSerialNumberStringProductionClosure {
+            return try await currentProductionDatalogSerialNumberStringProductionClosure(datalogSerialNumber)
+        } else {
+            return currentProductionDatalogSerialNumberStringProductionReturnValue
+        }
+    }
+
+    //MARK: - dailyProduction
+
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionThrowableError: (any Error)?
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount = 0
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCalled: Bool {
+        return dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount > 0
+    }
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments: (datalogSerialNumber: String, inverterSerialNumber: String)?
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations: [(datalogSerialNumber: String, inverterSerialNumber: String)] = []
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReturnValue: DailyProduction!
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure: ((String, String) async throws -> DailyProduction)?
+
+    public func dailyProduction(datalogSerialNumber: String, inverterSerialNumber: String) async throws -> DailyProduction {
+        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount += 1
+        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments = (datalogSerialNumber: datalogSerialNumber, inverterSerialNumber: inverterSerialNumber)
+        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations.append((datalogSerialNumber: datalogSerialNumber, inverterSerialNumber: inverterSerialNumber))
+        if let error = dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionThrowableError {
+            throw error
+        }
+        if let dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure = dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure {
+            return try await dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure(datalogSerialNumber, inverterSerialNumber)
+        } else {
+            return dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReturnValue
+        }
+    }
+
+
+}
+class ProductionUseCaseMock: ProductionUseCase {
+
+
+
+
+    //MARK: - loadSocialContribution
+
+    var loadSocialContributionSocialContributionCallsCount = 0
+    var loadSocialContributionSocialContributionCalled: Bool {
+        return loadSocialContributionSocialContributionCallsCount > 0
+    }
+    var loadSocialContributionSocialContributionReturnValue: SocialContribution?
+    var loadSocialContributionSocialContributionClosure: (() async -> SocialContribution?)?
+
+    func loadSocialContribution() async -> SocialContribution? {
+        loadSocialContributionSocialContributionCallsCount += 1
+        if let loadSocialContributionSocialContributionClosure = loadSocialContributionSocialContributionClosure {
+            return await loadSocialContributionSocialContributionClosure()
+        } else {
+            return loadSocialContributionSocialContributionReturnValue
+        }
+    }
+
+    //MARK: - loadCurrentProduction
+
+    var loadCurrentProductionProductionCallsCount = 0
+    var loadCurrentProductionProductionCalled: Bool {
+        return loadCurrentProductionProductionCallsCount > 0
+    }
+    var loadCurrentProductionProductionReturnValue: Production?
+    var loadCurrentProductionProductionClosure: (() async -> Production?)?
+
+    func loadCurrentProduction() async -> Production? {
+        loadCurrentProductionProductionCallsCount += 1
+        if let loadCurrentProductionProductionClosure = loadCurrentProductionProductionClosure {
+            return await loadCurrentProductionProductionClosure()
+        } else {
+            return loadCurrentProductionProductionReturnValue
+        }
+    }
+
+    //MARK: - loadDailyProduction
+
+    var loadDailyProductionDailyProductionCallsCount = 0
+    var loadDailyProductionDailyProductionCalled: Bool {
+        return loadDailyProductionDailyProductionCallsCount > 0
+    }
+    var loadDailyProductionDailyProductionReturnValue: DailyProduction?
+    var loadDailyProductionDailyProductionClosure: (() async -> DailyProduction?)?
+
+    func loadDailyProduction() async -> DailyProduction? {
+        loadDailyProductionDailyProductionCallsCount += 1
+        if let loadDailyProductionDailyProductionClosure = loadDailyProductionDailyProductionClosure {
+            return await loadDailyProductionDailyProductionClosure()
+        } else {
+            return loadDailyProductionDailyProductionReturnValue
+        }
+    }
+
+
+}
 public class SessionManagerMock: SessionManager {
 
     public init() {}

@@ -12,9 +12,14 @@ import SwiftUI
 public struct MenuView: View {
     public class ViewState: ObservableObject {
         let settingsViewState: SettingsView.ViewState
+        let homeViewState: HomeView.ViewState
 
-        public init(settingsViewState: SettingsView.ViewState) {
+        public init(
+            settingsViewState: SettingsView.ViewState,
+            homeViewState: HomeView.ViewState
+        ) {
             self.settingsViewState = settingsViewState
+            self.homeViewState = homeViewState
         }
     }
 
@@ -28,7 +33,7 @@ public struct MenuView: View {
 
     public var body: some View {
         TabView {
-            HomeView()
+            HomeView(viewState: viewState.homeViewState)
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
                 }
@@ -45,7 +50,8 @@ public struct MenuView: View {
         settingsViewState: .init(
             username: "Test User",
             logoutViewState: .init()
-        )
+        ),
+        homeViewState: .init()
     )
     MenuView(viewState: viewState, navigationViewModel: MockNavigationViewModel())
 }

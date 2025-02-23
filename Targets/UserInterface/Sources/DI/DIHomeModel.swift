@@ -9,13 +9,13 @@
 import DependencyInjection
 import Foundation
 
-private struct HomeModelKey: InjectionKey {
-    static var currentValue: HomeModel = HomeModelImpl()
+private struct ProductionUseCaseKey: InjectionKey {
+    static var currentValue: ProductionUseCase = ProductionUseCaseImpl()
 }
 
 extension InjectedValues {
-    var homeModel: HomeModel {
-        get { Self[HomeModelKey.self] }
-        set { Self[HomeModelKey.self] = newValue }
+    var productionUseCase: ProductionUseCase {
+        get { Self[ProductionUseCaseKey.self] }
+        set { Self[ProductionUseCaseKey.self] = newValue }
     }
 }

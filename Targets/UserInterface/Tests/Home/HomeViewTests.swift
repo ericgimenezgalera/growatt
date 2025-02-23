@@ -14,105 +14,44 @@ import SwiftUI
 import ViewInspector
 import XCTest
 
-final class HomeViewTests: BaseViewTest<HomeView> {
-    var homeViewModelMock: HomeViewModelMock!
+final class HomeViewTests: XCTestCase {
+    var view: HomeView!
+    var viewState: HomeView.ViewState!
 
     override func setUp() {
-        homeViewModelMock = HomeViewModelMock()
-        view = HomeView(viewModel: homeViewModelMock)
+        viewState = .init()
+        view = .init(viewState: viewState)
     }
 
-    func testInitialState() throws {
-        onAppearView { view in
-            XCTAssertTrue(self.homeViewModelMock.isLoading)
-            XCTAssertTrue(self.homeViewModelMock.loadProductionDataCalled)
-            XCTAssertFalse(try view.find(viewWithId: HomeConstants.spinnerId).isHidden())
-        }
+    @MainActor
+    func testInitialState() async {
+        assertNamedSnapshot(matching: view, size: .init(width: 350, height: 400))
     }
 
-    func testSpinner() throws {
-        onAppearView { view in
-            XCTAssertTrue(self.homeViewModelMock.isLoading)
-            _ = try view.find(viewWithId: HomeConstants.spinnerId)
+    @MainActor
+    func testInitialStateWithLoadedData() async {
+        viewState.currentProduction = Production(totalSolar: 1, exportToGrid: 2, importFromGrid: 3, useInLocal: 5)
+        viewState.socialContribution = SocialContribution(co2: 9999, tree: 12345, coal: 54321)
 
-            self.homeViewModelMock.isLoading = false
-            XCTAssertThrowsError(try view.find(viewWithId: HomeConstants.spinnerId))
+        await viewState.homeEnergyProgressBarViewState.updateData(
+            section: HomeEnergyStorage.selfConsumed.rawValue,
+            to: 0.3
+        )
+        await viewState.homeEnergyProgressBarViewState.updateData(
+            section: HomeEnergyStorage.importedFromGrid.rawValue,
+            to: 1
+        )
 
-            self.homeViewModelMock.isLoading = true
-            _ = try view.find(viewWithId: HomeConstants.spinnerId)
-        }
+        await viewState.solarProductionProgressBarViewState.updateData(
+            section: HomeEnergyStorage.selfConsumed.rawValue,
+            to: 0.6
+        )
+        await viewState.solarProductionProgressBarViewState.updateData(
+            section: HomeEnergyStorage.importedFromGrid.rawValue,
+            to: 0.4
+        )
+
+        viewState.isLoading = false
+        assertNamedSnapshot(matching: view, size: .init(width: 350, height: 700))
     }
-
-    func testCurrentProduction() throws {
-        let production = Production.makeStub()
-        homeViewModelMock.currentProduction = production
-        onAppearView { view in
-            let totalSolar = try view.find(viewWithId: HomeConstants.totalSolarId)
-                .labeledContent().text(0).string()
-            let useInLocal = try view.find(viewWithId: HomeConstants.useInLocalId)
-                .labeledContent().text(0).string()
-            let exportToGrid = try view.find(viewWithId: HomeConstants.exportToGridId)
-                .labeledContent().text(0).string()
-            let importFromGrid = try view.find(viewWithId: HomeConstants.importFromGridId)
-                .labeledContent().text(0).string()
-
-            XCTAssertEqual(totalSolar, "\(production.totalSolar) W")
-            XCTAssertEqual(useInLocal, "\(production.useInLocal) W")
-            XCTAssertEqual(exportToGrid, "\(production.exportToGrid) W")
-            XCTAssertEqual(importFromGrid, "\(production.importFromGrid) W")
-        }
-    }
-
-    func testSocialContribution() throws {
-        let socialContribution = SocialContribution.makeStub()
-        homeViewModelMock.socialContribution = socialContribution
-        onAppearView { view in
-            let tree = try view.find(viewWithId: HomeConstants.treeId)
-                .text().string()
-            let co2 = try view.find(viewWithId: HomeConstants.co2Id)
-                .text().string()
-
-            XCTAssertEqual(tree, "\(socialContribution.tree)")
-            XCTAssertEqual(co2, "\(Int(socialContribution.co2))")
-        }
-    }
-
-    // Missing test we can't call refresh at this moment with ViewInspector 0.9.9 they need to implement it.
-    /* func testRefreshData() {
-         let production = Production.makeStub()
-         homeViewModelMock.currentProduction = production
-         onAppearView { view in
-             let totalSolar = try view.find(viewWithId: HomeConstants.totalSolarId)
-                 .labeledContent().text(0).string()
-             let useInLocal = try view.find(viewWithId: HomeConstants.useInLocalId)
-                 .labeledContent().text(0).string()
-             let exportToGrid = try view.find(viewWithId: HomeConstants.exportToGridId)
-                 .labeledContent().text(0).string()
-             let importFromGrid = try view.find(viewWithId: HomeConstants.importFromGridId)
-                 .labeledContent().text(0).string()
-
-             XCTAssertEqual(totalSolar, "\(production.totalSolar) W")
-             XCTAssertEqual(useInLocal, "\(production.useInLocal) W")
-             XCTAssertEqual(exportToGrid, "\(production.exportToGrid) W")
-             XCTAssertEqual(importFromGrid, "\(production.importFromGrid) W")
-
-             let production = Production(totalSolar: 10.0, exportToGrid: 5.0, importFromGrid: 7.0, useInLocal: 1.0)
-             homeViewModelMock.currentProduction = production
-             try view.find(viewWithId: HomeConstants.formId).refreshable()
-
-             let totalSolar = try view.find(viewWithId: HomeConstants.totalSolarId)
-                 .labeledContent().text(0).string()
-             let useInLocal = try view.find(viewWithId: HomeConstants.useInLocalId)
-                 .labeledContent().text(0).string()
-             let exportToGrid = try view.find(viewWithId: HomeConstants.exportToGridId)
-                 .labeledContent().text(0).string()
-             let importFromGrid = try view.find(viewWithId: HomeConstants.importFromGridId)
-                 .labeledContent().text(0).string()
-
-             XCTAssertEqual(totalSolar, "\(production.totalSolar) W")
-             XCTAssertEqual(useInLocal, "\(production.useInLocal) W")
-             XCTAssertEqual(exportToGrid, "\(production.exportToGrid) W")
-             XCTAssertEqual(importFromGrid, "\(production.importFromGrid) W")
-         }
-     }*/
 }

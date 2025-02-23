@@ -13,6 +13,7 @@ public enum ProductionServiceError: Error, Equatable {
     case invalidProductionValue(_ value: String)
 }
 
+// sourcery: AutoMockable
 public protocol ProductionService {
     func currentProduction(datalogSerialNumber: String) async throws -> Production
     func dailyProduction(datalogSerialNumber: String, inverterSerialNumber: String) async throws -> DailyProduction

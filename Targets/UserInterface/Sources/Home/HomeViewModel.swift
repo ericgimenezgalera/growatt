@@ -16,102 +16,54 @@ private enum DataResult {
     case production(Production?)
 }
 
-class HomeViewModel: ViewModel {
-    @Injected(\.homeModel) private var homeModel: HomeModel
-    @Published var isLoading: Bool = true
-    @Published var currentProduction: Production?
-    @Published var socialContribution: SocialContribution?
+public class HomeViewModel: HomeView.Output {
+    @Injected(\.productionUseCase) private var productionUseCase: ProductionUseCase
+    public let viewState: HomeView.ViewState
 
-    func loadProductionData(
-        homeEnergyProgressBar: any SwiftUiMultiProgressView,
-        solarProductionProgressBar: any SwiftUiMultiProgressView
-    ) {
-        let task = Task<Void, Never>.detached(priority: .background) { [weak self] in
-            defer {
-                DispatchQueue.main.sync { [weak self] in
-                    self?.isLoading = false
-                }
-            }
-
-            guard
-                let (socialContribution, dailyProduction, currentProduction) = await self?.fetchData(),
-                let socialContribution = socialContribution,
-                let dailyProduction = dailyProduction,
-                let currentProduction = currentProduction
-            else {
-                return
-            }
-
-            await self?.publishDailyProduction(
-                homeEnergyProgressBar: homeEnergyProgressBar,
-                solarProductionProgressBar: solarProductionProgressBar,
-                dailyProduction: dailyProduction
-            )
-
-            await self?.publishProductionData(
-                socialContribution: socialContribution,
-                currentProduction: currentProduction
-            )
-        }
-        tasks.append(task)
+    public init() {
+        viewState = .init()
+        viewState.output = self
     }
 
-    private func fetchData() async -> (SocialContribution?, DailyProduction?, Production?) {
-        await withTaskGroup(of: DataResult.self) { [self] group -> (
-            SocialContribution?,
-            DailyProduction?,
-            Production?
-        ) in
-            group.addTask {
-                .socialContribution(await self.homeModel.loadSocialContribution())
-            }
-
-            group.addTask {
-                .dailyProduction(await self.homeModel.loadDailyProduction())
-            }
-
-            group.addTask {
-                .production(await self.homeModel.loadCurrentProduction())
-            }
-
-            var finalProduction: Production?
-            var finalSocialContribution: SocialContribution?
-            var finalDailyProduction: DailyProduction?
-
-            for await value in group {
-                switch value {
-                case let .production(production):
-                    finalProduction = production
-                case let .socialContribution(socialContribution):
-                    finalSocialContribution = socialContribution
-                case let .dailyProduction(dailyProduction):
-                    finalDailyProduction = dailyProduction
-                }
-            }
-
-            return (finalSocialContribution, finalDailyProduction, finalProduction)
+    @MainActor
+    func loadData() async {
+        viewState.isLoading = true
+        defer {
+            viewState.isLoading = false
         }
+
+        guard
+            let socialContribution = await productionUseCase.loadSocialContribution(),
+            let dailyProduction = await productionUseCase.loadDailyProduction(),
+            let currentProduction = await productionUseCase.loadCurrentProduction()
+        else {
+            return
+        }
+
+        await publishDailyProduction(dailyProduction: dailyProduction)
+        await publishProductionData(
+            socialContribution: socialContribution,
+            currentProduction: currentProduction
+        )
     }
 
     @MainActor func publishDailyProduction(
-        homeEnergyProgressBar: some SwiftUiMultiProgressView,
-        solarProductionProgressBar: any SwiftUiMultiProgressView,
         dailyProduction: DailyProduction
     ) async {
-        await homeEnergyProgressBar.updateData(
+        await viewState.homeEnergyProgressBarViewState.updateData(
             section: HomeEnergyStorage.selfConsumed.rawValue,
             to: Float(dailyProduction.selfConsumed / dailyProduction.totalLocal)
         )
-        await homeEnergyProgressBar.updateData(
+        await viewState.homeEnergyProgressBarViewState.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
             to: Float(dailyProduction.importedFromGrid / dailyProduction.totalLocal)
         )
 
-        await solarProductionProgressBar.updateData(
+        await viewState.solarProductionProgressBarViewState.updateData(
             section: SolarProductionStorage.selfConsumed.rawValue,
             to: Float(dailyProduction.selfConsumed / dailyProduction.totalSolar)
         )
-        await solarProductionProgressBar.updateData(
+        await viewState.solarProductionProgressBarViewState.updateData(
             section: SolarProductionStorage.exportedToGrid.rawValue,
             to: Float(dailyProduction.exportedToGrid / dailyProduction.totalSolar)
         )
@@ -121,7 +73,7 @@ class HomeViewModel: ViewModel {
         socialContribution: SocialContribution,
         currentProduction: Production
     ) async {
-        self.socialContribution = socialContribution
-        self.currentProduction = currentProduction
+        viewState.socialContribution = socialContribution
+        viewState.currentProduction = currentProduction
     }
 }

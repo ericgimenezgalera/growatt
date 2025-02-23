@@ -12,11 +12,11 @@ import Foundation
 extension DailyProduction {
     static func makeStub() -> DailyProduction {
         DailyProduction(
-            totalSolar: 12345,
-            selfConsumed: 22222,
-            exportedToGrid: 33333,
-            importedFromGrid: 44444,
-            totalLocal: 98765
+            totalSolar: 2000,
+            selfConsumed: 1000,
+            exportedToGrid: 1000,
+            importedFromGrid: 600,
+            totalLocal: 1600
         )
     }
 }

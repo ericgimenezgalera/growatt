@@ -10,15 +10,38 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
-class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
-    private let multiProgressViewDataSource = CustomMultiProgressViewDataSource<T>()
+public class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
+    public class ViewState: ObservableObject {
+        let multiProgressViewDataSource = CustomMultiProgressViewDataSource<T>()
+        let progressView = MultiProgressView()
+        let title: String
+
+        @MainActor
+        public func updateData(section: Int, to progress: Float) async {
+            UIView.animate(withDuration: 0.5) { [self] in
+                progressView.setProgress(section: section, to: progress)
+            }
+        }
+
+        @MainActor
+        public func resetProgress() async {
+            UIView.animate(withDuration: 0.5) { [self] in
+                progressView.resetProgress()
+            }
+        }
+
+        public init(title: String) {
+            self.title = title
+            progressView.dataSource = multiProgressViewDataSource
+        }
+    }
+
+    @ObservedObject var viewState: ViewState
+
     private let padding: CGFloat = 15
     private let progressViewHeight: CGFloat = 20
-    private let title: String
-    private var progressView: MultiProgressView!
-
-    init(_ title: String) {
-        self.title = title
+    init(viewState: ViewState) {
+        self.viewState = viewState
         super.init(frame: CGRect())
         initialize()
     }
@@ -30,15 +53,14 @@ class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
     func initialize() {
         backgroundColor = .clear
         let titleLabel = makeTitleLabel()
-        let progressView = makeMultiProgressView(topView: titleLabel)
-        self.progressView = progressView
-        makeStackView(topView: progressView)
+        makeMultiProgressView(topView: titleLabel)
+        makeStackView(topView: viewState.progressView)
     }
 
     @discardableResult
     private func makeTitleLabel() -> UILabel {
         let titleLabel = UILabel()
-        titleLabel.text = title
+        titleLabel.text = viewState.title
         titleLabel.font = UIFont.systemFont(ofSize: 14)
         addSubview(titleLabel)
         titleLabel.anchor(
@@ -49,15 +71,12 @@ class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
         return titleLabel
     }
 
-    @discardableResult
-    private func makeMultiProgressView(topView: UIView) -> MultiProgressView {
-        let progressView = MultiProgressView()
-        progressView.trackBackgroundColor = UIColor.progressViewBackground
-        progressView.lineCap = .round
-        progressView.cornerRadius = progressViewHeight / 4
-        progressView.dataSource = multiProgressViewDataSource
-        addSubview(progressView)
-        progressView.anchor(
+    private func makeMultiProgressView(topView: UIView) {
+        viewState.progressView.trackBackgroundColor = UIColor.progressViewBackground
+        viewState.progressView.lineCap = .round
+        viewState.progressView.cornerRadius = progressViewHeight / 4
+        addSubview(viewState.progressView)
+        viewState.progressView.anchor(
             top: topView.bottomAnchor,
             left: leftAnchor,
             right: rightAnchor,
@@ -66,7 +85,6 @@ class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
             paddingRight: padding,
             height: progressViewHeight
         )
-        return progressView
     }
 
     @discardableResult
@@ -94,13 +112,5 @@ class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
         stackView.addArrangedSubview(UIView())
 
         return stackView
-    }
-
-    func updateData(section: Int, to progress: Float) {
-        progressView.setProgress(section: section, to: progress)
-    }
-
-    func resetProgress() {
-        progressView.resetProgress()
     }
 }

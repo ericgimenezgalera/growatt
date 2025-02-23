@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-protocol ProgressViewStorageType: CaseIterable {
+public protocol ProgressViewStorageType: CaseIterable {
     init(rawValue: Int)
     var rawValue: Int { get }
     var color: UIColor { get }

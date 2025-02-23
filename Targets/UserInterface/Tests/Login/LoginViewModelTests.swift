@@ -42,7 +42,10 @@ final class LoginViewModelTests: XCTestCase {
 
         await viewModel.didTapLogin()
 
-        XCTAssertEqual(navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? LoginNavigationRoute, .onLogged)
+        XCTAssertEqual(
+            navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? LoginNavigationRoute,
+            .onLogged
+        )
         XCTAssertNil(viewModel.viewState.alertError)
         XCTAssertFalse(viewModel.viewState.showError)
     }
@@ -67,7 +70,10 @@ final class LoginViewModelTests: XCTestCase {
 
         await viewModel.loginWithBiometric()
 
-        XCTAssertEqual(navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? LoginNavigationRoute, .onLogged)
+        XCTAssertEqual(
+            navigationViewModelMock.navigateRouteAnyHashableVoidReceivedRoute as? LoginNavigationRoute,
+            .onLogged
+        )
         XCTAssertNil(viewModel.viewState.alertError)
         XCTAssertFalse(viewModel.viewState.showError)
     }

@@ -1,5 +1,5 @@
 //
-//  HomeModel.swift
+//  ProductionUseCase.swift
 //  UIFramework
 //
 //  Created by Eric Gimènez Galera on 13/9/23.
@@ -10,13 +10,14 @@ import API
 import DependencyInjection
 import Foundation
 
-protocol HomeModel {
+// sourcery: AutoMockable
+protocol ProductionUseCase {
     func loadSocialContribution() async -> SocialContribution?
     func loadCurrentProduction() async -> Production?
     func loadDailyProduction() async -> DailyProduction?
 }
 
-class HomeModelImpl: HomeModel {
+class ProductionUseCaseImpl: ProductionUseCase {
     @Injected(\.productionService) var productionService: ProductionService
     @Injected(\.plantService) var plantService: PlantService
 
