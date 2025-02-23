@@ -36,10 +36,12 @@ public struct MenuView: View {
             HomeView(viewState: viewState.homeViewState)
                 .tabItem {
                     Label("Home", systemImage: "house.fill")
+                        .accessibilityLabel(MenuConstants.home)
                 }
             SettingsView(viewState: viewState.settingsViewState)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape.fill")
+                        .accessibilityLabel(MenuConstants.settings)
                 }
         }
     }

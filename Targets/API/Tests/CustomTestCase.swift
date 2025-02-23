@@ -65,7 +65,7 @@ class BaseTests: XCTestCase {
             url: url,
             ignoreQuery: ignoreQuery,
             cacheStoragePolicy: cacheStoragePolicy,
-            dataType: dataType,
+            contentType: dataType,
             statusCode: statusCode,
             data: data,
             additionalHeaders: additionalHeaders,

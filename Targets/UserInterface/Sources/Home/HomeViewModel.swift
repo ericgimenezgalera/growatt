@@ -47,7 +47,8 @@ public class HomeViewModel: HomeView.Output {
         )
     }
 
-    @MainActor func publishDailyProduction(
+    @MainActor
+    func publishDailyProduction(
         dailyProduction: DailyProduction
     ) async {
         await viewState.homeEnergyProgressBarViewState.updateData(

@@ -48,14 +48,14 @@ public struct PasswordField: View {
                         text: $viewState.password,
                         prompt: Text("Password")
                     )
-                    .id(viewState.passwordTextFieldId)
+                    .accessibilityLabel(viewState.passwordTextFieldId)
                 } else {
                     SecureField(
                         "Password",
                         text: $viewState.password,
                         prompt: Text("Password")
                     )
-                    .id(viewState.passwordSecureFieldId)
+                    .accessibilityLabel(viewState.passwordSecureFieldId)
                 }
             }
             .padding(10)
@@ -71,7 +71,7 @@ public struct PasswordField: View {
                         .tint(.black)
                 }
             )
-            .id(viewState.eyeButtonId)
+            .accessibilityLabel(viewState.eyeButtonId)
         }
     }
 }

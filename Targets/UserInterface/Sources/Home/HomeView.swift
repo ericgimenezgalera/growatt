@@ -38,13 +38,13 @@ public struct HomeView: View {
                 if let currentProduction = viewState.currentProduction {
                     Section(header: Text("CURRENT PRODUCTION"), content: {
                         LabeledContent("Solar production", value: "\(currentProduction.totalSolar) W")
-                            .id(HomeConstants.totalSolarId)
+                            .accessibilityLabel(HomeConstants.totalSolarId)
                         LabeledContent("Used at home", value: "\(currentProduction.useInLocal) W")
-                            .id(HomeConstants.useInLocalId)
+                            .accessibilityLabel(HomeConstants.useInLocalId)
                         LabeledContent("Export to Grid", value: "\(currentProduction.exportToGrid) W")
-                            .id(HomeConstants.exportToGridId)
+                            .accessibilityLabel(HomeConstants.exportToGridId)
                         LabeledContent("Import from Grid", value: "\(currentProduction.importFromGrid) W")
-                            .id(HomeConstants.importFromGridId)
+                            .accessibilityLabel(HomeConstants.importFromGridId)
                     })
                 }
                 Section(header: Text("DAILY PRODUCTION"), content: {
@@ -64,13 +64,13 @@ public struct HomeView: View {
                             VStack {
                                 Image(systemName: "tree")
                                 Text("\(socialContribution.tree)")
-                                    .id(HomeConstants.treeId)
+                                    .accessibilityLabel(HomeConstants.treeId)
                             }
                             Spacer()
                             VStack {
                                 Image(systemName: "carbon.dioxide.cloud", variableValue: 100)
                                 Text("\(Int(socialContribution.co2))")
-                                    .id(HomeConstants.co2Id)
+                                    .accessibilityLabel(HomeConstants.co2Id)
                             }
                             Spacer()
                         }
@@ -109,7 +109,7 @@ public struct HomeView: View {
         )
         await viewState.homeEnergyProgressBarViewState.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
-            to: 1
+            to: 0.7
         )
 
         await viewState.solarProductionProgressBarViewState.updateData(

@@ -39,7 +39,7 @@ final class HomeViewTests: XCTestCase {
         )
         await viewState.homeEnergyProgressBarViewState.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
-            to: 1
+            to: 0.7
         )
 
         await viewState.solarProductionProgressBarViewState.updateData(

@@ -5,53 +5,28 @@
 
 import Foundation
 #if os(iOS) || os(tvOS) || os(watchOS)
-import UIKit
+    import UIKit
 #elseif os(OSX)
-import AppKit
+    import AppKit
 #endif
 
 import API
 
 @testable import UserInterface
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public class AuthorizationServiceMock: AuthorizationService {
-
     public init() {}
 
-
-
-    //MARK: - authorise
+    // MARK: - authorise
 
     public var authoriseAuthenticationAuthenticationRequestVoidThrowableError: (any Error)?
     public var authoriseAuthenticationAuthenticationRequestVoidCallsCount = 0
     public var authoriseAuthenticationAuthenticationRequestVoidCalled: Bool {
         return authoriseAuthenticationAuthenticationRequestVoidCallsCount > 0
     }
-    public var authoriseAuthenticationAuthenticationRequestVoidReceivedAuthentication: (AuthenticationRequest)?
-    public var authoriseAuthenticationAuthenticationRequestVoidReceivedInvocations: [(AuthenticationRequest)] = []
+
+    public var authoriseAuthenticationAuthenticationRequestVoidReceivedAuthentication: AuthenticationRequest?
+    public var authoriseAuthenticationAuthenticationRequestVoidReceivedInvocations: [AuthenticationRequest] = []
     public var authoriseAuthenticationAuthenticationRequestVoidClosure: ((AuthenticationRequest) async throws -> Void)?
 
     public func authorise(authentication: AuthenticationRequest) async throws {
@@ -63,20 +38,16 @@ public class AuthorizationServiceMock: AuthorizationService {
         }
         try await authoriseAuthenticationAuthenticationRequestVoidClosure?(authentication)
     }
-
-
 }
+
 class GetPlantDetailsUseCaseMock: GetPlantDetailsUseCase {
-
-
-
-
-    //MARK: - getPlantData
+    // MARK: - getPlantData
 
     var getPlantDataPlantDetailsCallsCount = 0
     var getPlantDataPlantDetailsCalled: Bool {
         return getPlantDataPlantDetailsCallsCount > 0
     }
+
     var getPlantDataPlantDetailsReturnValue: PlantDetails?
     var getPlantDataPlantDetailsClosure: (() async -> PlantDetails?)?
 
@@ -88,20 +59,16 @@ class GetPlantDetailsUseCaseMock: GetPlantDetailsUseCase {
             return getPlantDataPlantDetailsReturnValue
         }
     }
-
-
 }
+
 class LoginUseCaseMock: LoginUseCase {
-
-
-
-
-    //MARK: - login
+    // MARK: - login
 
     var loginUsernameStringPasswordStringBoolCallsCount = 0
     var loginUsernameStringPasswordStringBoolCalled: Bool {
         return loginUsernameStringPasswordStringBoolCallsCount > 0
     }
+
     var loginUsernameStringPasswordStringBoolReceivedArguments: (username: String, password: String)?
     var loginUsernameStringPasswordStringBoolReceivedInvocations: [(username: String, password: String)] = []
     var loginUsernameStringPasswordStringBoolReturnValue: Bool!
@@ -118,14 +85,15 @@ class LoginUseCaseMock: LoginUseCase {
         }
     }
 
-    //MARK: - loginWithBiometric
+    // MARK: - loginWithBiometric
 
     var loginWithBiometricUsernameStringBoolCallsCount = 0
     var loginWithBiometricUsernameStringBoolCalled: Bool {
         return loginWithBiometricUsernameStringBoolCallsCount > 0
     }
-    var loginWithBiometricUsernameStringBoolReceivedUsername: (String)?
-    var loginWithBiometricUsernameStringBoolReceivedInvocations: [(String)] = []
+
+    var loginWithBiometricUsernameStringBoolReceivedUsername: String?
+    var loginWithBiometricUsernameStringBoolReceivedInvocations: [String] = []
     var loginWithBiometricUsernameStringBoolReturnValue: Bool!
     var loginWithBiometricUsernameStringBoolClosure: ((String) async -> Bool)?
 
@@ -139,43 +107,36 @@ class LoginUseCaseMock: LoginUseCase {
             return loginWithBiometricUsernameStringBoolReturnValue
         }
     }
-
-
 }
+
 class LogoutUseCaseMock: LogoutUseCase {
-
-
-
-
-    //MARK: - logout
+    // MARK: - logout
 
     var logoutVoidCallsCount = 0
     var logoutVoidCalled: Bool {
         return logoutVoidCallsCount > 0
     }
+
     var logoutVoidClosure: (() -> Void)?
 
     func logout() {
         logoutVoidCallsCount += 1
         logoutVoidClosure?()
     }
-
-
 }
-public class NavigationViewModelMock: NavigationViewModel {
 
+public class NavigationViewModelMock: NavigationViewModel {
     public init() {}
 
-
-
-    //MARK: - navigate
+    // MARK: - navigate
 
     public var navigateRouteAnyHashableVoidCallsCount = 0
     public var navigateRouteAnyHashableVoidCalled: Bool {
         return navigateRouteAnyHashableVoidCallsCount > 0
     }
+
     public var navigateRouteAnyHashableVoidReceivedRoute: (any Hashable)?
-    public var navigateRouteAnyHashableVoidReceivedInvocations: [(any Hashable)] = []
+    public var navigateRouteAnyHashableVoidReceivedInvocations: [any Hashable] = []
     public var navigateRouteAnyHashableVoidClosure: ((any Hashable) async -> Void)?
 
     public func navigate(route: any Hashable) async {
@@ -184,22 +145,19 @@ public class NavigationViewModelMock: NavigationViewModel {
         navigateRouteAnyHashableVoidReceivedInvocations.append(route)
         await navigateRouteAnyHashableVoidClosure?(route)
     }
-
-
 }
-public class PlantServiceMock: PlantService {
 
+public class PlantServiceMock: PlantService {
     public init() {}
 
-
-
-    //MARK: - plantList
+    // MARK: - plantList
 
     public var plantListPlantDetailsThrowableError: (any Error)?
     public var plantListPlantDetailsCallsCount = 0
     public var plantListPlantDetailsCalled: Bool {
         return plantListPlantDetailsCallsCount > 0
     }
+
     public var plantListPlantDetailsReturnValue: PlantDetails!
     public var plantListPlantDetailsClosure: (() async throws -> PlantDetails)?
 
@@ -215,13 +173,14 @@ public class PlantServiceMock: PlantService {
         }
     }
 
-    //MARK: - socialContribution
+    // MARK: - socialContribution
 
     public var socialContributionSocialContributionThrowableError: (any Error)?
     public var socialContributionSocialContributionCallsCount = 0
     public var socialContributionSocialContributionCalled: Bool {
         return socialContributionSocialContributionCallsCount > 0
     }
+
     public var socialContributionSocialContributionReturnValue: SocialContribution!
     public var socialContributionSocialContributionClosure: (() async throws -> SocialContribution)?
 
@@ -236,24 +195,21 @@ public class PlantServiceMock: PlantService {
             return socialContributionSocialContributionReturnValue
         }
     }
-
-
 }
-public class ProductionServiceMock: ProductionService {
 
+public class ProductionServiceMock: ProductionService {
     public init() {}
 
-
-
-    //MARK: - currentProduction
+    // MARK: - currentProduction
 
     public var currentProductionDatalogSerialNumberStringProductionThrowableError: (any Error)?
     public var currentProductionDatalogSerialNumberStringProductionCallsCount = 0
     public var currentProductionDatalogSerialNumberStringProductionCalled: Bool {
         return currentProductionDatalogSerialNumberStringProductionCallsCount > 0
     }
-    public var currentProductionDatalogSerialNumberStringProductionReceivedDatalogSerialNumber: (String)?
-    public var currentProductionDatalogSerialNumberStringProductionReceivedInvocations: [(String)] = []
+
+    public var currentProductionDatalogSerialNumberStringProductionReceivedDatalogSerialNumber: String?
+    public var currentProductionDatalogSerialNumberStringProductionReceivedInvocations: [String] = []
     public var currentProductionDatalogSerialNumberStringProductionReturnValue: Production!
     public var currentProductionDatalogSerialNumberStringProductionClosure: ((String) async throws -> Production)?
 
@@ -264,52 +220,74 @@ public class ProductionServiceMock: ProductionService {
         if let error = currentProductionDatalogSerialNumberStringProductionThrowableError {
             throw error
         }
-        if let currentProductionDatalogSerialNumberStringProductionClosure = currentProductionDatalogSerialNumberStringProductionClosure {
+        if let currentProductionDatalogSerialNumberStringProductionClosure =
+            currentProductionDatalogSerialNumberStringProductionClosure {
             return try await currentProductionDatalogSerialNumberStringProductionClosure(datalogSerialNumber)
         } else {
             return currentProductionDatalogSerialNumberStringProductionReturnValue
         }
     }
 
-    //MARK: - dailyProduction
+    // MARK: - dailyProduction
 
-    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionThrowableError: (any Error)?
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionThrowableError: (
+        any Error
+    )?
     public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount = 0
     public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCalled: Bool {
         return dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount > 0
     }
-    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments: (datalogSerialNumber: String, inverterSerialNumber: String)?
-    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations: [(datalogSerialNumber: String, inverterSerialNumber: String)] = []
-    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReturnValue: DailyProduction!
-    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure: ((String, String) async throws -> DailyProduction)?
 
-    public func dailyProduction(datalogSerialNumber: String, inverterSerialNumber: String) async throws -> DailyProduction {
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments: (
+        datalogSerialNumber: String,
+        inverterSerialNumber: String
+    )?
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations: [(
+        datalogSerialNumber: String,
+        inverterSerialNumber: String
+    )] = []
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReturnValue: DailyProduction!
+    public var dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure: ((
+        String,
+        String
+    ) async throws -> DailyProduction)?
+
+    public func dailyProduction(
+        datalogSerialNumber: String,
+        inverterSerialNumber: String
+    ) async throws -> DailyProduction {
         dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionCallsCount += 1
-        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments = (datalogSerialNumber: datalogSerialNumber, inverterSerialNumber: inverterSerialNumber)
-        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations.append((datalogSerialNumber: datalogSerialNumber, inverterSerialNumber: inverterSerialNumber))
+        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedArguments = (
+            datalogSerialNumber: datalogSerialNumber,
+            inverterSerialNumber: inverterSerialNumber
+        )
+        dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReceivedInvocations.append((
+            datalogSerialNumber: datalogSerialNumber,
+            inverterSerialNumber: inverterSerialNumber
+        ))
         if let error = dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionThrowableError {
             throw error
         }
-        if let dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure = dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure {
-            return try await dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure(datalogSerialNumber, inverterSerialNumber)
+        if let dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure =
+            dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure {
+            return try await dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionClosure(
+                datalogSerialNumber,
+                inverterSerialNumber
+            )
         } else {
             return dailyProductionDatalogSerialNumberStringInverterSerialNumberStringDailyProductionReturnValue
         }
     }
-
-
 }
+
 class ProductionUseCaseMock: ProductionUseCase {
-
-
-
-
-    //MARK: - loadSocialContribution
+    // MARK: - loadSocialContribution
 
     var loadSocialContributionSocialContributionCallsCount = 0
     var loadSocialContributionSocialContributionCalled: Bool {
         return loadSocialContributionSocialContributionCallsCount > 0
     }
+
     var loadSocialContributionSocialContributionReturnValue: SocialContribution?
     var loadSocialContributionSocialContributionClosure: (() async -> SocialContribution?)?
 
@@ -322,12 +300,13 @@ class ProductionUseCaseMock: ProductionUseCase {
         }
     }
 
-    //MARK: - loadCurrentProduction
+    // MARK: - loadCurrentProduction
 
     var loadCurrentProductionProductionCallsCount = 0
     var loadCurrentProductionProductionCalled: Bool {
         return loadCurrentProductionProductionCallsCount > 0
     }
+
     var loadCurrentProductionProductionReturnValue: Production?
     var loadCurrentProductionProductionClosure: (() async -> Production?)?
 
@@ -340,12 +319,13 @@ class ProductionUseCaseMock: ProductionUseCase {
         }
     }
 
-    //MARK: - loadDailyProduction
+    // MARK: - loadDailyProduction
 
     var loadDailyProductionDailyProductionCallsCount = 0
     var loadDailyProductionDailyProductionCalled: Bool {
         return loadDailyProductionDailyProductionCallsCount > 0
     }
+
     var loadDailyProductionDailyProductionReturnValue: DailyProduction?
     var loadDailyProductionDailyProductionClosure: (() async -> DailyProduction?)?
 
@@ -357,27 +337,22 @@ class ProductionUseCaseMock: ProductionUseCase {
             return loadDailyProductionDailyProductionReturnValue
         }
     }
-
-
 }
-public class SessionManagerMock: SessionManager {
 
+public class SessionManagerMock: SessionManager {
     public init() {}
 
-
-
-    //MARK: - logout
+    // MARK: - logout
 
     public var logoutVoidCallsCount = 0
     public var logoutVoidCalled: Bool {
         return logoutVoidCallsCount > 0
     }
+
     public var logoutVoidClosure: (() -> Void)?
 
     public func logout() {
         logoutVoidCallsCount += 1
         logoutVoidClosure?()
     }
-
-
 }

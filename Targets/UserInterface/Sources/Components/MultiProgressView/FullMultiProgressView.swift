@@ -13,7 +13,7 @@ import SwiftUI
 public class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
     public class ViewState: ObservableObject {
         let multiProgressViewDataSource = CustomMultiProgressViewDataSource<T>()
-        let progressView = MultiProgressView()
+        @Published var progressView = MultiProgressView()
         let title: String
 
         @MainActor

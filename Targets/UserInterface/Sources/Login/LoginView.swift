@@ -61,7 +61,7 @@ public struct LoginView: View {
                 prompt: Text("Login")
                     .foregroundColor(.gray)
             )
-            .id(LoginConstants.usernameTextFieldId)
+            .accessibilityLabel(LoginConstants.usernameTextFieldId)
             .padding(10)
             .overlay {
                 RoundedRectangle(cornerRadius: 10)
@@ -80,7 +80,6 @@ public struct LoginView: View {
                     .bold()
                     .foregroundColor(.white)
             })
-            .id(LoginConstants.signinButtonId)
             .frame(height: 50)
             .frame(maxWidth: .infinity) // how to make a button fill all the space available horizontaly
             .background(

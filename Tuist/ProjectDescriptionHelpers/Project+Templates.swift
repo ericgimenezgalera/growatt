@@ -92,7 +92,19 @@ extension Project {
             dependencies: [
                 .target(name: "\(name)")
         ])
-        return [mainTarget, testTarget]
+
+        let uiTestTarget = Target.target(
+            name: "\(name)UITests",
+            destinations: destinations,
+            product: .uiTests,
+            bundleId: "eric.gimenez.galera.\(name)UITests",
+            infoPlist: .default,
+            sources: ["Targets/\(name)/UITests/**", "Targets/**/Tests/Shared/**"],
+            scripts: getCommonPreScripts(name),
+            dependencies: [
+                .target(name: "\(name)")
+        ])
+        return [mainTarget, testTarget, uiTestTarget]
     }
     
     private static func getCommonPreScripts(_ targetName: String) -> [TargetScript] {

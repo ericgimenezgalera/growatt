@@ -31,7 +31,7 @@ struct AsyncButton<Label: View>: View {
             label: {
                 label()
             }
-        ).id(viewState.buttonId)
+        ).accessibilityLabel(viewState.buttonId)
     }
 }
 
