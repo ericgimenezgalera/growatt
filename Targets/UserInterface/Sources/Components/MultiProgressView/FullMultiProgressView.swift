@@ -10,107 +10,56 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
-public class FullMultiProgressView<T: ProgressViewStorageType>: UIView {
+public struct FullMultiProgressView<T: ProgressViewStorageType>: View {
     public class ViewState: ObservableObject {
-        let multiProgressViewDataSource = CustomMultiProgressViewDataSource<T>()
-        @Published var progressView = MultiProgressView()
+        @Published var progressView = SwiftUiMultiProgressViewImpl(dataSource: CustomMultiProgressViewDataSource<T>())
         let title: String
-
-        @MainActor
-        public func updateData(section: Int, to progress: Float) async {
-            UIView.animate(withDuration: 0.5) { [self] in
-                progressView.setProgress(section: section, to: progress)
-            }
-        }
-
-        @MainActor
-        public func resetProgress() async {
-            UIView.animate(withDuration: 0.5) { [self] in
-                progressView.resetProgress()
-            }
-        }
 
         public init(title: String) {
             self.title = title
-            progressView.dataSource = multiProgressViewDataSource
         }
     }
 
     @ObservedObject var viewState: ViewState
 
-    private let padding: CGFloat = 15
-    private let progressViewHeight: CGFloat = 20
     init(viewState: ViewState) {
         self.viewState = viewState
-        super.init(frame: CGRect())
-        initialize()
     }
 
-    required init?(coder _: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    public var body: some View {
+        VStack {
+            Text(viewState.title)
+                .font(.system(size: 14))
 
-    func initialize() {
-        backgroundColor = .clear
-        let titleLabel = makeTitleLabel()
-        makeMultiProgressView(topView: titleLabel)
-        makeStackView(topView: viewState.progressView)
-    }
+            viewState.progressView
+                .background(Color(UIColor.progressViewBackground))
+                .cornerRadius(5)
+                .frame(maxHeight: 20)
+                .padding(.bottom, 15)
+                .padding(.horizontal, 15)
 
-    @discardableResult
-    private func makeTitleLabel() -> UILabel {
-        let titleLabel = UILabel()
-        titleLabel.text = viewState.title
-        titleLabel.font = UIFont.systemFont(ofSize: 14)
-        addSubview(titleLabel)
-        titleLabel.anchor(
-            top: topAnchor,
-            paddingTop: padding,
-            centerX: centerXAnchor
-        )
-        return titleLabel
-    }
+            HStack() {
+                ForEach(HomeEnergyStorage.allCases, id: \.rawValue) { type in
 
-    private func makeMultiProgressView(topView: UIView) {
-        viewState.progressView.trackBackgroundColor = UIColor.progressViewBackground
-        viewState.progressView.lineCap = .round
-        viewState.progressView.cornerRadius = progressViewHeight / 4
-        addSubview(viewState.progressView)
-        viewState.progressView.anchor(
-            top: topView.bottomAnchor,
-            left: leftAnchor,
-            right: rightAnchor,
-            paddingTop: padding,
-            paddingLeft: padding,
-            paddingRight: padding,
-            height: progressViewHeight
-        )
-    }
+                    Rectangle()
+                        .fill(Color(type.color))
+                        .cornerRadius(2)
+                        .frame(width: 11, height: 11)
 
-    @discardableResult
-    private func makeStackView(topView: UIView) -> UIStackView {
-        let stackView = UIStackView()
-        stackView.distribution = .equalSpacing
-        stackView.alignment = .center
-
-        addSubview(stackView)
-        stackView.anchor(
-            top: topView.bottomAnchor,
-            left: leftAnchor,
-            bottom: bottomAnchor,
-            right: rightAnchor,
-            paddingTop: padding,
-            paddingLeft: padding,
-            paddingBottom: padding,
-            paddingRight: padding
-        )
-
-        for type in T.allCases {
-            stackView.addArrangedSubview(StorageStackView(storageType: type))
+                    Text("\(type.description)")
+                        .font(.system(size: 11))
+                        .padding(.trailing, 15)
+                }
+            }
         }
-
-        stackView.addArrangedSubview(UIView())
-
-        return stackView
     }
+}
+
+#Preview {
+    let viewState = FullMultiProgressView<HomeEnergyStorage>.ViewState(title: "Test title")
+    Task { @MainActor in
+        await viewState.progressView.updateData(section: 0, to: 0.3)
+        await viewState.progressView.updateData(section: 1, to: 0.7)
+    }
+    return FullMultiProgressView(viewState: viewState)
 }

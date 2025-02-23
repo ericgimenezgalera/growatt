@@ -51,20 +51,20 @@ public class HomeViewModel: HomeView.Output {
     func publishDailyProduction(
         dailyProduction: DailyProduction
     ) async {
-        await viewState.homeEnergyProgressBarViewState.updateData(
+        await viewState.homeEnergyProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.selfConsumed.rawValue,
             to: Float(dailyProduction.selfConsumed / dailyProduction.totalLocal)
         )
-        await viewState.homeEnergyProgressBarViewState.updateData(
+        await viewState.homeEnergyProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
             to: Float(dailyProduction.importedFromGrid / dailyProduction.totalLocal)
         )
 
-        await viewState.solarProductionProgressBarViewState.updateData(
+        await viewState.solarProductionProgressBarViewState.progressView.updateData(
             section: SolarProductionStorage.selfConsumed.rawValue,
             to: Float(dailyProduction.selfConsumed / dailyProduction.totalSolar)
         )
-        await viewState.solarProductionProgressBarViewState.updateData(
+        await viewState.solarProductionProgressBarViewState.progressView.updateData(
             section: SolarProductionStorage.exportedToGrid.rawValue,
             to: Float(dailyProduction.exportedToGrid / dailyProduction.totalSolar)
         )

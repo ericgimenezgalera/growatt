@@ -48,9 +48,9 @@ public struct HomeView: View {
                     })
                 }
                 Section(header: Text("DAILY PRODUCTION"), content: {
-                    SwiftUiMultiProgressViewImpl<HomeEnergyStorage>(viewState: viewState.homeEnergyProgressBarViewState)
+                    FullMultiProgressView<HomeEnergyStorage>(viewState: viewState.homeEnergyProgressBarViewState)
                         .frame(height: 120)
-                    SwiftUiMultiProgressViewImpl<SolarProductionStorage>(
+                    FullMultiProgressView<SolarProductionStorage>(
                         viewState: viewState
                             .solarProductionProgressBarViewState
                     )
@@ -103,20 +103,20 @@ public struct HomeView: View {
     viewState.currentProduction = Production(totalSolar: 1, exportToGrid: 2, importFromGrid: 3, useInLocal: 5)
     viewState.socialContribution = SocialContribution(co2: 9999, tree: 12345, coal: 54321)
     Task { @MainActor in
-        await viewState.homeEnergyProgressBarViewState.updateData(
+        await viewState.homeEnergyProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.selfConsumed.rawValue,
             to: 0.3
         )
-        await viewState.homeEnergyProgressBarViewState.updateData(
+        await viewState.homeEnergyProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
             to: 0.7
         )
 
-        await viewState.solarProductionProgressBarViewState.updateData(
+        await viewState.solarProductionProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.selfConsumed.rawValue,
             to: 0.6
         )
-        await viewState.solarProductionProgressBarViewState.updateData(
+        await viewState.solarProductionProgressBarViewState.progressView.updateData(
             section: HomeEnergyStorage.importedFromGrid.rawValue,
             to: 0.4
         )

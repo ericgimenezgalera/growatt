@@ -10,19 +10,38 @@ import Foundation
 import MultiProgressView
 import SwiftUI
 
-struct SwiftUiMultiProgressViewImpl<T: ProgressViewStorageType>: UIViewRepresentable {
-    typealias UIViewType = FullMultiProgressView<T>
-    private let view: FullMultiProgressView<T>
+struct SwiftUiMultiProgressViewImpl: UIViewRepresentable {
+    typealias UIViewType = MultiProgressView
+    private let view: MultiProgressView
 
-    init(viewState: FullMultiProgressView<T>.ViewState) {
-        view = FullMultiProgressView<T>(viewState: viewState)
+    init<T>(dataSource: CustomMultiProgressViewDataSource<T>) {
+        view = MultiProgressView()
+        view.dataSource = dataSource
     }
 
-    func makeUIView(context _: Context) -> FullMultiProgressView<T> {
+    func makeUIView(context _: Context) -> MultiProgressView {
         return view
     }
 
-    func updateUIView(_: FullMultiProgressView<T>, context _: Context) {
+    func updateUIView(_: MultiProgressView, context _: Context) {
         // Updates the state of the specified view with new information from SwiftUI.
+    }
+
+    @MainActor
+    public func updateData(section: Int, to progress: Float) async {
+        UIView.animate(withDuration: 0.5) { [self] in
+            view.setProgress(section: section, to: progress)
+        }
+    }
+
+    @MainActor
+    public func resetProgress() async {
+        UIView.animate(withDuration: 0.5) { [self] in
+            view.resetProgress()
+        }
+    }
+
+    public func progress(forSection section: Int) -> Float {
+        view.progress(forSection: section)
     }
 }
